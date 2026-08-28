@@ -1,0 +1,33 @@
+# Core deep learning
+torch
+torchvision
+torchaudio
+
+# Transformers / model loading
+transformers
+accelerate
+sentencepiece
+tokenizers
+
+# Embeddings + vector search (RAG pipeline)
+sentence-transformers
+faiss-cpu
+
+# RAG orchestration frameworks
+langchain
+langchain-community
+llama-index
+
+# RAG evaluation
+ragas
+
+# Data handling / utilities
+numpy
+pandas
+scikit-learn
+tqdm
+
+# Dev environment
+jupyter
+ipykernel
+python-dotenv
