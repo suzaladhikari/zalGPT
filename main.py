@@ -1,9 +1,6 @@
 import torch 
 import torch.nn as nn 
 from torch.nn import functional as F
+import tiktoken
 
-## Reading the data 
-with open("./data/TinyStories-train.txt", "r") as f:
-    text = f.read()
-
-print(text[:1000])
+torch.manual_seed(455841)
