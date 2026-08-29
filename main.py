@@ -24,5 +24,5 @@ vocab_size = len(chars)
 enc = tiktoken.get_encoding('gpt2')
 
 ## Training and validaiton split 
-data = torch.tensor(enc.encode(text), dtype = torch.long)
+data = torch.tensor(enc.encode(text,allowed_special={"<|endoftext|>"}), dtype = torch.long)
 print(data)
