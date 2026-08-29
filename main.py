@@ -6,6 +6,14 @@ import json
 import numpy as np
 
 torch.manual_seed(455841)
+
+### Setting up the hyperparameters
+n_embd = 32
+batch_size = 64
+block_size = 256
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+### Each time the model gets the data of total 16,384 tokens/step
+
 ### Extracting the key words
 chars = set() 
 with open("../localgpt/data/TinyStories-train.txt", "r", encoding="utf-8") as f:
@@ -26,4 +34,13 @@ enc = tiktoken.get_encoding('gpt2')
 
 ## Training and validaiton split
 data = torch.tensor(np.memmap('../localgpt/data/train.bin', dtype = np.uint16, mode = 'r'))
-print(len(data))
+n = int(0.9 * len(data))
+train_data = data[:n]
+validation_data = data[n:]
+
+## Creating the batches of data
+
+def get_batch(split):
+    # data = train_data if split == 'train' else validation_data if split == 'val' else test_data
+    data = train_data if split == 'train' else validation_data 
+    index = torch.randint(len(data)-block_size , (batch_size,))
