@@ -44,3 +44,9 @@ def get_batch(split):
     # data = train_data if split == 'train' else validation_data if split == 'val' else test_data
     data = train_data if split == 'train' else validation_data 
     index = torch.randint(len(data)-block_size , (batch_size,))
+    x = torch.stack([data[i:i+block_size] for i in index])
+    y = torch.stack([data[i+1:i+block_size+1] for i in index])
+    return x,y
+
+xb,yb = get_batch("train")
+print(xb.shape)
