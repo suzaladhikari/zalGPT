@@ -3,6 +3,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 import tiktoken
 import json
+import numpy as np
 
 torch.manual_seed(455841)
 ### Extracting the key words
@@ -23,6 +24,6 @@ vocab_size = len(chars)
 ## Setting up the encoder and decoder
 enc = tiktoken.get_encoding('gpt2')
 
-## Training and validaiton split 
-data = torch.tensor(enc.encode(text,allowed_special={"<|endoftext|>"}), dtype = torch.long)
-print(data)
+## Training and validaiton split
+data = torch.tensor(np.memmap('../localgpt/data/train.bin', dtype = np.uint16, mode = 'r'))
+print(len(data))
