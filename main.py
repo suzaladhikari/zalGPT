@@ -49,4 +49,6 @@ def get_batch(split):
     return x,y
 
 xb,yb = get_batch("train")
-print(xb.shape)
+xb,yb = xb.to(device), yb.to(device)
+
+## Creating a
