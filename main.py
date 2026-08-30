@@ -71,7 +71,8 @@ class Head(nn.Module):
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ## This fills up the weight matrix created with the respect to the buffer 
         wei = F.softmax(wei, dim = -1) ## Taking out the probability from the whole matrix
         out = wei @ v ## 256 X 256 @ 256 X 8 => 256 X 8
-        
+        return out 
+    
 
 
 
