@@ -64,10 +64,15 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(dropout_layer)
     def forward(self,x):
         B,T,C = x.shape
-        k = self.key(x)
-        q = self.query(x)
-        v = self.value(x)
+        k = self.key(x) ## 256 X 32 (x) * 32 X 8 -> 256 X 8 
+        q = self.query(x) ## Shape = 256 X 8 
+        v = self.value(x) ## Shape = 256 X 8
+        wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ## Normalizing the resulting matrix of 256 X 256 with the help of head_size
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ## This fills up the weight matrix created with the respect to the buffer 
+        wei = F.softmax(wei, dim = -1) ## Taking out the probability from the whole matrix
+        out = wei @ v ## 256 X 256 @ 256 X 8 => 256 X 8
         
+
 
 
 ## Creating a Multi Head Attention Block
