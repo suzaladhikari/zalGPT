@@ -62,6 +62,12 @@ class Head(nn.Module):
         self.query = nn.Linear(n_embd, head_size) ## Query defines on the need or want or matching element
         self.register_buffer('tril', torch.tril(torch.ones(block_size,block_size))) ## Creates a 256 X 256 buffeer that is not trainable but stores a pattern to prevent the model seing future information while predicting 
         self.dropout = nn.Dropout(dropout_layer)
+    def forward(self,x):
+        B,T,C = x.shape
+        k = self.key(x)
+        q = self.query(x)
+        v = self.value(x)
+        
 
 
 ## Creating a Multi Head Attention Block
