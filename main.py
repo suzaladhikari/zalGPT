@@ -51,4 +51,13 @@ def get_batch(split):
 xb,yb = get_batch("train")
 xb,yb = xb.to(device), yb.to(device)
 
-## Creating a
+## Creating a bigram language model 
+class GalGPT(nn.Module):
+    def __init__(self):
+        ## Creating an embedding table 
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.position_embedding_table = nn.Embedding(block_size, n_embd) ## This is what stores the position of the given token 
+        self.blocks = nn.Sequential(
+            Block()
+        )
+
