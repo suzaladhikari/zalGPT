@@ -81,6 +81,12 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
         self.heads = nn.ModuleList([Head(head_size)] for _ in range(n_head))
+        self.proj = nn.Linear(n_head * head_size, n_embd) ## 32 X 32, just to make sure that the learned updated matrix talk to eachother
+    def forward(self,x):
+        
+
+
+
 
 
 ## Lets create a transformer block 
