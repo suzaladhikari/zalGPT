@@ -86,19 +86,24 @@ class MultiHeadAttention(nn.Module):
         out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other creating 256 X 32 dimension matrix which will be used 
         out = self.proj(out) ## 256 X 32 @ 32 X 32 -> 256 X 32 
         return out  ## 256 X 32
+
+## Feed Forward 
+class FeedForward(nn.Module):
+    def __init__(self, n_embd):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_embd , 4 * n_embd),
+            nn.ReLU(),
+            nn.Linear(4*n_embd, n_embd)
+        )
     
-
-
-
-
-
-
 ## Lets create a transformer block 
 class Block(nn.Module):
     def __init__(self, n_embd, n_head):
         super().__init__()
         head_size = n_embd // n_head
         self.sa = MultiHeadAttention(n_head, head_size)
+        self.ffwd = 
 
 ## Creating a bigram language model 
 class GalGPT(nn.Module):
