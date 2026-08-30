@@ -107,7 +107,12 @@ class Block(nn.Module):
         self.ffwd = FeedForward(n_embd)
         self.ln1 = nn.LayerNorm(n_embd)
         self.ln2 = nn.LayerNorm(n_embd)
-         
+
+    def forward(self,x):
+        x = x + self.sa(self.ln1(x)) 
+        x = x + self.ffwd(self.ln2(x))
+        return x 
+
 
 ## Creating a bigram language model 
 class GalGPT(nn.Module):
