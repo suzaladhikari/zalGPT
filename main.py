@@ -83,7 +83,11 @@ class MultiHeadAttention(nn.Module):
         self.heads = nn.ModuleList([Head(head_size)] for _ in range(n_head))
         self.proj = nn.Linear(n_head * head_size, n_embd) ## 32 X 32, just to make sure that the learned updated matrix talk to eachother
     def forward(self,x):
-        
+        out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other creating 256 X 32 dimension matrix which will be used 
+        out = self.proj(out) ## 256 X 32 @ 32 X 32 -> 256 X 32 
+        return out  ## 256 X 32
+    
+
 
 
 
