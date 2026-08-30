@@ -51,6 +51,15 @@ def get_batch(split):
 xb,yb = get_batch("train")
 xb,yb = xb.to(device), yb.to(device)
 
+### Creating a Self Attention Head Block 
+class Head(nn.Module):
+    def __init__(self, head_size):
+        super().__init__()
+        self.head_size = head_size
+        self.key = nn.Linear(n_embd, head_size) ## Key defines or eexplains what the token has to oofer or how can it be seen 
+        self.value = nn.Linear(n_embd, head_size) ## Value defines what information that the token has 
+        self.query = nn.Linear(n_embd, head_size) ## Query defines on the need or want or matching element
+        
 
 ## Creating a Multi Head Attention Block
 class MultiHeadAttention(nn.Module):
