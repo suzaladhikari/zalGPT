@@ -104,7 +104,10 @@ class Block(nn.Module):
         super().__init__()
         head_size = n_embd // n_head
         self.sa = MultiHeadAttention(n_head, head_size)
-        self.ffwd = 
+        self.ffwd = FeedForward(n_embd)
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
+         
 
 ## Creating a bigram language model 
 class GalGPT(nn.Module):
