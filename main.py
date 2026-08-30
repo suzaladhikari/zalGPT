@@ -51,11 +51,20 @@ def get_batch(split):
 xb,yb = get_batch("train")
 xb,yb = xb.to(device), yb.to(device)
 
+
+## Creating a Multi Head Attention Block
+class MultiHeadAttention(nn.Module):
+    def __init__(self, n_head, head_size):
+        super().__init__()
+        self.heads = nn.ModuleList([Head(head_size)] for _ in range(n_head))
+
+
 ## Lets create a transformer block 
 class Block(nn.Module):
     def __init__(self, n_embd, n_head):
         super().__init__()
-        self.sa = MultiHeadAttention()
+        head_size = n_embd // n_head
+        self.sa = MultiHeadAttention(n_head, head_size)
 
 ## Creating a bigram language model 
 class GalGPT(nn.Module):
