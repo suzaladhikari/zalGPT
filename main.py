@@ -12,6 +12,7 @@ n_embd = 32
 batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
+dropout_layer = 0.2
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
@@ -59,7 +60,9 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embd, head_size) ## Key defines or eexplains what the token has to oofer or how can it be seen 
         self.value = nn.Linear(n_embd, head_size) ## Value defines what information that the token has 
         self.query = nn.Linear(n_embd, head_size) ## Query defines on the need or want or matching element
-        
+        self.register_buffer('tril', torch.tril(torch.ones(block_size,block_size))) ## Creates a 256 X 256 buffeer that is not trainable but stores a pattern to prevent the model seing future information while predicting 
+        self.dropout = nn.Dropout(dropout_layer)
+
 
 ## Creating a Multi Head Attention Block
 class MultiHeadAttention(nn.Module):
