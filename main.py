@@ -131,7 +131,7 @@ class GalGPT(nn.Module):
         position_table = self.position_embedding_table(torch.arange(T, device = device)) ## 256 X 32 meaning 256 X 32 = 8192 new position vectors will represent each token at the given seqeuence, and since the position is same across each seqeuence it will be applied across batches
         x = embedding_table + position_table ## 64 X 256 X 32, Creating a combined matrix input for self attention blocks that has information of both characters and their positions
         x = self.blocks(x) ## 64 X 256 X 32 
-        logits = self.lm_head(x) ## 64 X 256 X 243
+        logits = self.lm_head(x) ## 64 X 256 X 243 ## For each token model produces 243 scores one for each possible token in the vocab.
         if targets is None:
             loss = None
         else:
@@ -145,6 +145,11 @@ class GalGPT(nn.Module):
     def generate(self, idx, max_new_tokens):
         for _ in range(max_new_tokens):
             idx_condition = idx[:,-block_size:] ## For every sequence in the batch, we will get on ly the last 256 tokens.
+            logits, loss = self(idx_condition)
+            logits = logits[:,-1,:] ## From each sequence we will take the last token and its scores for the possible next token.
+            probs = F.softmax(logits, dim = -1) ## Converting the raw scores to probabilty in each row
+            idx_next = torch.multinomial(probs, num_samples=1) ## This predicts the next idx based on the probabilty distribution created from the probs
+            
 
 
 
