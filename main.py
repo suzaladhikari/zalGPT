@@ -13,10 +13,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 200
+eval_iters = 10
 learning_rate = 3e-5
-max_iters = 5000
-eval_interval = 500
+max_iters = 500
+eval_interval = 50
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
@@ -144,7 +144,7 @@ class GalGPT(nn.Module):
             logits_flat = logits.view(B*T, C) ## 16384, 243
             targets = targets.view(B*T) ##16384
             loss = F.cross_entropy(logits_flat,targets)
-            return logits, loss
+        return logits, loss
 
 
     def generate(self, idx, max_new_tokens):
