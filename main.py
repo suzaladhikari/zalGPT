@@ -149,7 +149,8 @@ class GalGPT(nn.Module):
             logits = logits[:,-1,:] ## From each sequence we will take the last token and its scores for the possible next token.
             probs = F.softmax(logits, dim = -1) ## Converting the raw scores to probabilty in each row
             idx_next = torch.multinomial(probs, num_samples=1) ## This predicts the next idx based on the probabilty distribution created from the probs
-            
+            idx = torch.cat((idx, idx_next), dim = 1)  ## The newly generated token gets added based on the lenght of the max new tokens 
+        return idx 
 
 
 
