@@ -49,7 +49,7 @@ def get_batch(split):
     index = torch.randint(len(data)-block_size , (batch_size,))
     x = torch.stack([data[i:i+block_size] for i in index])
     y = torch.stack([data[i+1:i+block_size+1] for i in index])
-    return x,y
+    return x.long(),y.long()
 
 xb,yb = get_batch("train")
 xb,yb = xb.to(device), yb.to(device)
@@ -82,7 +82,7 @@ class Head(nn.Module):
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
-        self.heads = nn.ModuleList([Head(head_size)] for _ in range(n_head))
+        self.heads = nn.ModuleList([Head(head_size) for _ in range(n_head)])
         self.proj = nn.Linear(n_head * head_size, n_embd) ## 32 X 32, just to make sure that the learned updated matrix talk to eachother
     def forward(self,x):
         out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other creating 256 X 32 dimension matrix which will be used 
@@ -165,7 +165,7 @@ m = model.to(device)
 
 ### Creating the loss function to calculate the loss throughout the interval
 
-@torch.grad()
+@torch.no_grad()
 def estimate_loss():
     out = {}
     model.eval()
