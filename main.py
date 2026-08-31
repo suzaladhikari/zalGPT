@@ -172,6 +172,9 @@ def estimate_loss():
             X,Y = X.to(device), Y.to(device)
             logits, loss = model(X,Y)
             losses[k] = loss.item() 
+        out[split] = losses.mean()
+    model.train()
+    return out 
         
 
 
