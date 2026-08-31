@@ -30,11 +30,11 @@ with open('../localgpt/data/vocab.json', 'w', encoding='utf-8') as f:
     json.dump(chars,f)
 
 ## Setting up the vocab_size 
-vocab_size = len(chars)
-print(vocab_size)
+
 ## Setting up the encoder and decoder
 enc = tiktoken.get_encoding('gpt2')
-
+vocab_size = enc.n_vocab
+print(vocab_size)
 ## Training and validaiton split
 data = torch.tensor(np.memmap('../localgpt/data/train.bin', dtype = np.uint16, mode = 'r'))
 n = int(0.9 * len(data))
@@ -120,6 +120,7 @@ class Block(nn.Module):
 class GalGPT(nn.Module):
     def __init__(self):
         ## Creating an embedding table 
+        super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd) ## 243 X 32 
         self.position_embedding_table = nn.Embedding(block_size, n_embd) ## 256 X 32
         self.blocks = nn.Sequential(
