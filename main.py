@@ -49,7 +49,7 @@ def get_batch(split):
 
 xb,yb = get_batch("train")
 xb,yb = xb.to(device), yb.to(device)
-
+print(xb.shape)
 ### Creating a Self Attention Head Block 
 class Head(nn.Module):
     def __init__(self, head_size):
@@ -127,9 +127,15 @@ class GalGPT(nn.Module):
         self.lm_head = nn.Linear(n_embd, vocab_size)
     def forward(self, idx, targets = None):
         B, T = idx.shape
-        embedding_table = self.token_embedding_table(idx)
-        position_table = self.position_embedding_table(torch.arange(T, device = device))
-        
+        embedding_table = self.token_embedding_table(idx)  ## 64 X 256 X 32 meaning 64 X 256 = 16384 such tokens will have a 32 dimensional representation
+        position_table = self.position_embedding_table(torch.arange(T, device = device)) ## 256 X 32 meaning 256 X 32 = 8192 new position vectors will represent each token at the given seqeuence, and since the position is same across each seqeuence it will be applied across batches
+        x = embedding_table + position_table ## 64 X 256 X 32, Creating a combined matrix input for self attention blocks that has information of both characters and their positions
+        x = self.blocks(x) ## 64 X 256 X 32 
+        logits = self.lm_head(x) ## 64 X 256 X 243
+
+
+
+
 
 
 
