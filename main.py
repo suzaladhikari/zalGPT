@@ -19,9 +19,7 @@ dropout_layer = 0.2
 chars = set() 
 with open("../localgpt/data/TinyStories-train.txt", "r", encoding="utf-8") as f:
     text = f.read()
-    for each_line in f:
-        chars.update(each_line)
-
+    chars.update(text)
 chars = sorted(chars)
 
 with open('../localgpt/data/vocab.json', 'w', encoding='utf-8') as f:
@@ -29,7 +27,7 @@ with open('../localgpt/data/vocab.json', 'w', encoding='utf-8') as f:
 
 ## Setting up the vocab_size 
 vocab_size = len(chars)
-
+print(vocab_size)
 ## Setting up the encoder and decoder
 enc = tiktoken.get_encoding('gpt2')
 
@@ -103,7 +101,7 @@ class Block(nn.Module):
     def __init__(self, n_embd, n_head):
         super().__init__()
         head_size = n_embd // n_head
-        self.sa = MultiHeadAttention(n_head, head_size)
+        self.sa = MultiHeadAttention(n_head, head_size) ## 256 X 32
         self.ffwd = FeedForward(n_embd)
         self.ln1 = nn.LayerNorm(n_embd)
         self.ln2 = nn.LayerNorm(n_embd)
@@ -118,9 +116,19 @@ class Block(nn.Module):
 class GalGPT(nn.Module):
     def __init__(self):
         ## Creating an embedding table 
-        self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
-        self.position_embedding_table = nn.Embedding(block_size, n_embd) ## This is what stores the position of the given token 
+        self.token_embedding_table = nn.Embedding(vocab_size, n_embd) ## 243 X 32 
+        self.position_embedding_table = nn.Embedding(block_size, n_embd) ## 256 X 32
         self.blocks = nn.Sequential(
-            Block()
-        )
+            Block(n_embd, n_head = 4),
+            Block(n_embd, n_head = 4),
+            Block(n_embd, n_head = 4)
+        )  ## 256 X 32
+        self.ln_f = nn.LayerNorm(n_embd)
+        self.lm_head = nn.Linear(n_embd, vocab_size)
+    def forward(self, idx, targets = None):
+        B, T = idx.shape
+        
+
+
+
 
