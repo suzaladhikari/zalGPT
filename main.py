@@ -127,7 +127,10 @@ class GalGPT(nn.Module):
         self.lm_head = nn.Linear(n_embd, vocab_size)
     def forward(self, idx, targets = None):
         B, T = idx.shape
+        embedding_table = self.token_embedding_table(idx)
+        position_table = self.position_embedding_table(torch.arange(T, device = device))
         
+
 
 
 
