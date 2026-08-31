@@ -133,6 +133,11 @@ class GalGPT(nn.Module):
         x = self.blocks(x) ## 64 X 256 X 32 
         logits = self.lm_head(x) ## 64 X 256 X 243
 
+## Intiating the model 
+model = GalGPT()
+m = model.to(device)
+
+
 
 
 
