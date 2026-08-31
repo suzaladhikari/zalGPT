@@ -132,6 +132,21 @@ class GalGPT(nn.Module):
         x = embedding_table + position_table ## 64 X 256 X 32, Creating a combined matrix input for self attention blocks that has information of both characters and their positions
         x = self.blocks(x) ## 64 X 256 X 32 
         logits = self.lm_head(x) ## 64 X 256 X 243
+        if targets is None:
+            loss = None
+        else:
+            B,T,C = logits.shape
+            logits_flat = logits.view(B*T, C) ## 16384, 243
+            targets = targets.view(B*T) ##16384
+            loss = F.cross_entropy(logits_flat,targets)
+            return logits, loss
+
+
+    def generate(self, idx, max_new_tokens):
+        for _ in range(max_new_tokens):
+            idx_condition = idx[:,-block_size:] ## For every sequence in the batch, we will get on ly the last 256 tokens.
+
+
 
 ## Intiating the model 
 model = GalGPT()
