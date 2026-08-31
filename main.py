@@ -187,6 +187,9 @@ for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = estimate_loss()
         print(f" step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+    xb, yb = get_batch('train')
+    xb, yb = xb.to(device), yb.to(device)
+    logits, loss = model(xb,yb)
     
 
 
