@@ -13,6 +13,7 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
+eval_iters = 200
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
@@ -157,6 +158,15 @@ class GalGPT(nn.Module):
 ## Intiating the model 
 model = GalGPT()
 m = model.to(device)
+
+### Creating the loss function to calculate the loss throughout the interval
+
+@torch.grad()
+def estimate_loss():
+    out = {}
+    model.eval()
+    for split in ['train','val']:
+        losses = torch.zeros(eval_iters)
 
 
 
