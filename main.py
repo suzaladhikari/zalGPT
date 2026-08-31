@@ -15,6 +15,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
 eval_iters = 200
 learning_rate = 3e-5
+max_iters = 5000
+eval_interval = 500
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
@@ -180,6 +182,12 @@ def estimate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
+
+for iter in range(max_iters):
+    if iter % eval_interval == 0:
+        losses = estimate_loss()
+        print(f" step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+    
 
 
 
