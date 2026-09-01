@@ -34,9 +34,22 @@ def create_batches(split):
 
 xb, yb = create_batches("train")
 
-class zalGPT(nn.Module):
-    def __init__():
+### Creating a transformer block 
+class Block(nn.Module):
+    def __init__(self, n_head, head_size):
         super().__init__()
+        self.sa_head = MultiHeadAttention(n_head, head_size)
+        self.ffwd = FeedForward(n_embd)
+        self.ln1 = nn.LayerNorm(n_embd)
+        self.ln2 = nn.LayerNorm(n_embd)
+    
+class zalGPT(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.blocks = nn.Sequential(
+            Block(n_embd)
+        )
 
 model = zalGPT()
 model.to(device)
