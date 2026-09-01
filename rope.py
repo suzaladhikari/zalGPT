@@ -34,13 +34,24 @@ def create_batches(split):
 
 xb, yb = create_batches("train")
 
+## Creating a Head
+class Head(nn.Module):
+    def __init__(self):
+        pass
+class MultiHeadAttention(nn.Module):
+    def __init__(self, n_head, head_size):
+        super().__init__()
+        self.sa_head = nn.Module([Head(head_size) for _ in range(n_head)])
+        self.proj = nn.Linear(head_size * n_head, n_embd)
+        
+
 ## Creating a feed forward layer 
 class FeedForward(nn.Module):
-    def __init__(self, n_embd)
+    def __init__(self, n_embd):
         super.__init__()
         self.net = nn.Sequential(
-            nn.Linear(n_embd, 4* n_embd)
-            nn.ReLU()
+            nn.Linear(n_embd, 4* n_embd),
+            nn.ReLU(),
             nn.Linear(n_embd *4 , n_embd)
         )
     def forward(self, x):
