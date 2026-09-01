@@ -43,7 +43,11 @@ class MultiHeadAttention(nn.Module):
         super().__init__()
         self.sa_head = nn.Module([Head(head_size) for _ in range(n_head)])
         self.proj = nn.Linear(head_size * n_head, n_embd)
-        
+    def forward(self,x):
+        out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other creating 256 X 32 dimension matrix which will be used 
+        out = self.proj(out) ## 256 X 32 @ 32 X 32 -> 256 X 32 
+        return out  ## 256 X 32
+
 
 ## Creating a feed forward layer 
 class FeedForward(nn.Module):
