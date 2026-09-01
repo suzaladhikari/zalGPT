@@ -36,8 +36,14 @@ xb, yb = create_batches("train")
 
 ## Creating a Head
 class Head(nn.Module):
-    def __init__(self):
-        pass
+    def __init__(self,head_size):
+        super().__init__()
+        self.head_size = head_size
+        self.key = nn.Linear(n_embd, head_size)
+        self.value = nn.Linear(n_embd, head_size)
+        self.query = nn.Linear(n_embd, head_size)
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
+        
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
