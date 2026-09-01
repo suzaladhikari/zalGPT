@@ -42,9 +42,13 @@ def generate_loss():
     model.eval()
     for split in ['train','test']:
         losses = torch.zeros(eval_iter)
-        for i in range(eval_iter):
+        for k in range(eval_iter):
             xb, yb = create_batches(split)
             xb, yb = xb.to(device), yb.to(device)
             logits, loss = model(xb, yb)
+            losses[k] = loss.item()
+        out[split] = losses.mean()
+    return out ## This returns the average of the 200 batches of losses for both training and validation
+
 
 
