@@ -34,6 +34,16 @@ def create_batches(split):
 
 xb, yb = create_batches("train")
 
+## Creating a feed forward layer 
+class FeedForward(nn.Module):
+    def __init__(self, n_embd)
+        super.__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_embd, 4* n_embd)
+            nn.ReLU()
+            nn.Linear(n_embd *4 , n_embd)
+        )
+    
 ### Creating a transformer block 
 class Block(nn.Module):
     def __init__(self, n_head, n_embd):
