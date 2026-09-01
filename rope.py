@@ -43,6 +43,8 @@ class FeedForward(nn.Module):
             nn.ReLU()
             nn.Linear(n_embd *4 , n_embd)
         )
+    def forward(self, x):
+        return self.net(x)
     
 ### Creating a transformer block 
 class Block(nn.Module):
