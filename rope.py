@@ -11,6 +11,7 @@ n_embd = 32
 total_iterations = 2000
 eval_iter = 20
 block_size = 256
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ## Setting up the encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
@@ -32,5 +33,18 @@ def create_batches(split):
     return x.long(), y.long()
 
 xb, yb = create_batches("train")
+
+
+## Creating a loss function 
+@torch.no_grad()
+def generate_loss():
+    out = {}
+    model.eval()
+    for split in ['train','test']:
+        losses = torch.zeros(eval_iter)
+        for i in range(eval_iter):
+            xb, yb = create_batches(split)
+            xb, yb = xb.to(device), yb.to(device)
+            logits, loss = model(xb, yb)
 
 
