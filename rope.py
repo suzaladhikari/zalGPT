@@ -34,7 +34,12 @@ def create_batches(split):
 
 xb, yb = create_batches("train")
 
+class zalGPT(nn.Module):
+    def __init__():
+        super().__init__()
 
+model = zalGPT()
+model.to(device)
 ## Creating a loss function 
 @torch.no_grad()
 def generate_loss():
