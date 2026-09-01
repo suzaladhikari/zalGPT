@@ -16,6 +16,10 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 ### For RoPE setup \
 def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
     roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
+    t = torch.arange(seq_len).float()
+    updated_frequency = torch.outer(roatating_frequency, t)
+    return updated_frequency.cos(), updated_frequency.sin()
+
 ## Setting up the encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
 vocab_size = enc.n_vocab ## This gives the total tokens used in the gpt2 encoder
