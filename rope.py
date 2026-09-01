@@ -36,19 +36,26 @@ xb, yb = create_batches("train")
 
 ### Creating a transformer block 
 class Block(nn.Module):
-    def __init__(self, n_head, head_size):
+    def __init__(self, n_head, n_embd):
         super().__init__()
+        head_size = n_embd // n_head
         self.sa_head = MultiHeadAttention(n_head, head_size)
         self.ffwd = FeedForward(n_embd)
         self.ln1 = nn.LayerNorm(n_embd)
         self.ln2 = nn.LayerNorm(n_embd)
+    def forward(self):
+        x = x + self.sa_head(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
+        return x 
     
 class zalGPT(nn.Module):
     def __init__(self):
         super().__init__()
         self.embedding_table = nn.Embedding(vocab_size, n_embd)
         self.blocks = nn.Sequential(
-            Block(n_embd)
+            Block(4, n_embd),
+            Block(4, n_embd),
+            Block(4, n_embd)
         )
 
 model = zalGPT()
