@@ -13,6 +13,9 @@ eval_iter = 20
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+### For RoPE setup \
+def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
+    roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
 ## Setting up the encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
 vocab_size = enc.n_vocab ## This gives the total tokens used in the gpt2 encoder
@@ -43,7 +46,8 @@ class Head(nn.Module):
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
         self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
-        
+        cos, sin = build_rope_cache()
+
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
