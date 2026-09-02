@@ -24,8 +24,10 @@ def apply_rope(x, cos, sin):
     x1 = x[:, :, 0::2] ## Only tshe even dimensions from C which is 8 in this case
     x2 = x[:, :, 1::2] ## Only the odd dimensions from C which is 8 in this case
     cos, sin = cos[:T], sin[:T] ## Getting the size of matrix based on the T 
-    rot1 = x1 *cos -x2 * sin 
-    rot2 = x1 * sin + x2 * cos
+    rot1 = x1 *cos -x2 * sin ## Rotating through sin and cos
+    rot2 = x1 * sin + x2 * cos ## Rotating through sin and cos 
+    return torch.stack([rot1, rot2], dim=-1).fatten(-2) ## Changing the shape form (256,4,2) -> (256,8)
+
 
 
 
