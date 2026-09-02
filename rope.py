@@ -143,4 +143,3 @@ def generate_loss():
     return out ## This returns the average of the 200 batches of losses for both training and validation
 
 
-
