@@ -126,7 +126,17 @@ class zalGPT(nn.Module):
         )
         self.ln_f = nn.LayerNorm(n_embd)
         self.linear_layer = nn.Linear(n_embd, vocab_size)
-        
+
+    def forward(self,x, targets = None):
+        B, T = x.shape
+        x = self.embedding_table(x)
+        x = self.blocks(x)
+        if targets is None: 
+            loss = None
+        else:
+            B, T, C = x.shape
+            
+
 
 model = zalGPT()
 model.to(device)
