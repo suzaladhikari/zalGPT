@@ -131,11 +131,17 @@ class zalGPT(nn.Module):
         B, T = x.shape
         x = self.embedding_table(x)
         x = self.blocks(x)
+        logits = self.linear_layer(x)
         if targets is None: 
             loss = None
         else:
             B, T, C = x.shape
-            
+            logits_flat = logits.view(B*T, C)
+            targets_flat = logits.view(B*T)
+            loss = F.cross_entropy(logits_flat, targets_flat)
+        return logits, loss 
+    
+
 
 
 model = zalGPT()
