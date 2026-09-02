@@ -11,6 +11,7 @@ n_embd = 32
 total_iterations = 2000
 eval_iter = 20
 block_size = 256
+dropout_layer = 0.2
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
@@ -62,6 +63,7 @@ class Head(nn.Module):
         cos, sin = build_rope_cache(block_size, head_size, device)
         self.register_buffer('rope_cos', cos, persistent=False) ## Since they are not the learnable parameters we use the buffer to deal with them
         self.register_buffer('rope_sin', sin, persistent=False)
+        self.dropout = nn.Dropout(dropout_layer)
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
