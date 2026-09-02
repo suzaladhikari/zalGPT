@@ -65,11 +65,15 @@ class Head(nn.Module):
         self.register_buffer('rope_sin', sin, persistent=False)
         self.dropout = nn.Dropout(dropout_layer)
     def forward(self, x):
+        B, T, C = x.shape
         k = self.key(x)
         q = self.query(x)
         v = self.value(x)
         k = apply_rope(x, self.rop_cos, self.rope_sin) ## Just rotates the given buffer based on what is inside
         q = apply_rope(x, self.rope_cos, self.rope_sin)
+        wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ## Weight matrix based on the rotated values
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ### Filling the buffer 
+        
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
