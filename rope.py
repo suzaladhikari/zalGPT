@@ -176,6 +176,14 @@ for iter in range(total_iterations):
     if iter % eval_interval == 0:
         losses = generate_loss()
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
-        
+
+    ## Setting up for the backwrad propagatoin 
+    xb, yb = create_batches('train')
+    xb.to(device), yb.to(device)
+    logits,loss = model(xb,yb)
+    loss.backward()
+    optimizer.forward()
+    
+
 
 
