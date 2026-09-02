@@ -29,8 +29,6 @@ def apply_rope(x, cos, sin):
     return torch.stack([rot1, rot2], dim=-1).fatten(-2) ## Changing the shape form (256,4,2) -> (256,8)
 
 
-
-
 ## Setting up the encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
 vocab_size = enc.n_vocab ## This gives the total tokens used in the gpt2 encoder
@@ -61,7 +59,9 @@ class Head(nn.Module):
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
         self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
-        cos, sin = build_rope_cache()
+        cos, sin = build_rope_cache(block_size, head_size, device)
+        self.register_buffer('rope_cos', cos, persistent=False) ## Since they are not the learnable parameters we use the buffer to deal with them
+        self.register_buffer('rope_sin', sin, persistent=False)
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
