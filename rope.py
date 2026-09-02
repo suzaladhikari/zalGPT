@@ -20,8 +20,12 @@ def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
     updated_frequency = torch.outer(roatating_frequency, t)
     return updated_frequency.cos(), updated_frequency.sin() ## Returns two matrices of size 256 X 4 which represents the sin and cos positions of the token positions 
 def apply_rope(x, cos, sin):
-    T = x.shape[1] ## Exatracting the T'th element from B,T,C 
-    x1 = x[..., 0::2]
+    T = x.shape[1] ## Exatracting the T'th element from B,T,C i.e. 256 in this case 
+    x1 = x[:, :, 0::2] ## Only tshe even dimensions from C which is 8 in this case
+    x2 = x[:, :, 1::2] ## Only the odd dimensions from C which is 8 in this case
+    cos, sin = cos[:T], sin[:T] ## Getting the size of matrix based on the T 
+    rot1 = x1 *cos -x2 * sin 
+    rot2 = x1 * sin + x2 * cos
 
 
 
