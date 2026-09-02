@@ -150,10 +150,6 @@ class zalGPT(nn.Module):
             idx_next = torch.multinomial(probs, num_samples=1) ## Giving one letter at a time 
             idx = torch.cat((idx, idx_next), dim = 1)
 
-    
-
-
-
 model = zalGPT()
 model.to(device)
 ## Creating a loss function 
@@ -171,4 +167,7 @@ def generate_loss():
         out[split] = losses.mean()
     return out ## This returns the average of the 200 batches of losses for both training and validation
 
+
+## Setting up the optimizer 
+optimizer = torch.optim.AdamW(model.parameters(), learning_rate= learning_rate)
 
