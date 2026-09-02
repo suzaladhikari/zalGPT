@@ -20,7 +20,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
     roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
     t = torch.arange(seq_len).float()
-    updated_frequency = torch.outer(roatating_frequency, t)
+    updated_frequency = torch.outer(t, roatating_frequency)
     return updated_frequency.cos(), updated_frequency.sin() ## Returns two matrices of size 256 X 4 which represents the sin and cos positions of the token positions 
 def apply_rope(x, cos, sin):
     T = x.shape[1] ## Exatracting the T'th element from B,T,C i.e. 256 in this case 
@@ -29,7 +29,7 @@ def apply_rope(x, cos, sin):
     cos, sin = cos[:T], sin[:T] ## Getting the size of matrix based on the T 
     rot1 = x1 *cos -x2 * sin ## Rotating through sin and cos
     rot2 = x1 * sin + x2 * cos ## Rotating through sin and cos 
-    return torch.stack([rot1, rot2], dim=-1).fatten(-2) ## Changing the shape form (256,4,2) -> (256,8)
+    return torch.stack([rot1, rot2], dim=-1).flatten(-2) ## Changing the shape form (256,4,2) -> (256,8)
 
 
 ## Setting up the encoder and decoder 
@@ -48,7 +48,7 @@ def create_batches(split):
     index = torch.randint(len(data) - block_size, (batch_size,))
     ## This return the random 64 different numbers from the len(data) - blocksize 
     x = torch.stack([data[i:i+block_size] for i in index]) ## 64 X 256 
-    y = torch.stack([data[i+1:block_size+1] for i in index]) ## 64 X 256
+    y = torch.stack([data[i+1:i+block_size+1] for i in index]) ## 64 X 256
     return x.long(), y.long() ## 64 X 256 , ##64 X 256
 
 xb, yb = create_batches("train")
@@ -71,8 +71,8 @@ class Head(nn.Module):
         k = self.key(x)
         q = self.query(x)
         v = self.value(x)
-        k = apply_rope(x, self.rop_cos, self.rope_sin) ## Just rotates the given buffer based on what is inside
-        q = apply_rope(x, self.rope_cos, self.rope_sin)
+        k = apply_rope(k, self.rope_cos, self.rope_sin) ## Just rotates the given buffer based on what is inside
+        q = apply_rope(q, self.rope_cos, self.rope_sin)
         wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ## Weight matrix based on the rotated values
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ### Filling the buffer 
         wei = F.softmax(wei, dim = -1)
@@ -82,7 +82,7 @@ class Head(nn.Module):
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
-        self.sa_head = nn.Module([Head(head_size) for _ in range(n_head)]) 
+        self.sa_head = nn.ModuleList([Head(head_size) for _ in range(n_head)]) 
         self.proj = nn.Linear(head_size * n_head, n_embd)
     def forward(self,x):
         out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other where each stacked data will have the shape of 256 X 8 creating 256 X 32 dimension matrix which will be used 
@@ -93,7 +93,7 @@ class MultiHeadAttention(nn.Module):
 ## Creating a feed forward layer 
 class FeedForward(nn.Module):
     def __init__(self, n_embd):
-        super.__init__()
+        super().__init__()
         self.net = nn.Sequential(
             nn.Linear(n_embd, 4* n_embd),
             nn.ReLU(),
@@ -111,7 +111,7 @@ class Block(nn.Module):
         self.ffwd = FeedForward(n_embd) ## The output will be the shape of 256 X 32 
         self.ln1 = nn.LayerNorm(n_embd) ## 256 X 32
         self.ln2 = nn.LayerNorm(n_embd) ## 256 X 32 
-    def forward(self):
+    def forward(self,x):
         x = x + self.sa_head(self.ln1(x))
         x = x + self.ffwd(self.ln2(x))
         return x ## 256 X 32
@@ -139,17 +139,18 @@ class zalGPT(nn.Module):
         else:
             B, T, C = x.shape
             logits_flat = logits.view(B*T, C)
-            targets_flat = logits.view(B*T)
+            targets_flat = targets.view(B*T)
             loss = F.cross_entropy(logits_flat, targets_flat)
         return logits, loss ## Logits and Loss updated
     def generate(self, idx, max_new_tokens):
         for _ in range(max_new_tokens):
-            idx_condition = idx[:-block_size:] ## Doesnot matter how many batches, or the size of C, but it needs to be less than 256 token
+            idx_condition = idx[:,-block_size:] ## Doesnot matter how many batches, or the size of C, but it needs to be less than 256 token
             logits, loss = self(idx_condition)
-            logits = logits[:-1:] ## The last token of the given sequence to predict the coming token 
+            logits = logits[:,-1,:] ## The last token of the given sequence to predict the coming token 
             probs = F.softmax(logits, dim = -1)## In each row it converts raw score to probability 
             idx_next = torch.multinomial(probs, num_samples=1) ## Giving one letter at a time 
             idx = torch.cat((idx, idx_next), dim = 1)
+        return idx
 
 model = zalGPT()
 model.to(device)
@@ -170,7 +171,7 @@ def generate_loss():
 
 
 ## Setting up the optimizer 
-optimizer = torch.optim.AdamW(model.parameters(), learning_rate= learning_rate)
+optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
 
 for iter in range(total_iterations):
     if iter % eval_interval == 0:
@@ -179,7 +180,7 @@ for iter in range(total_iterations):
 
     ## Setting up for the backwrad propagatoin 
     xb, yb = create_batches('train')
-    xb.to(device), yb.to(device)
+    xb, yb = xb.to(device), yb.to(device)
     logits,loss = model(xb,yb)
     optimizer.zero_grad(set_to_none=True)
     loss.backward()
