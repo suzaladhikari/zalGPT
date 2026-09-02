@@ -48,7 +48,7 @@ def create_batches(split):
     ## This return the random 64 different numbers from the len(data) - blocksize 
     x = torch.stack([data[i:i+block_size] for i in index]) ## 64 X 256 
     y = torch.stack([data[i+1:block_size+1] for i in index]) ## 64 X 256
-    return x.long(), y.long()
+    return x.long(), y.long() ## 64 X 256 , ##64 X 256
 
 xb, yb = create_batches("train")
 
@@ -81,10 +81,10 @@ class Head(nn.Module):
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
-        self.sa_head = nn.Module([Head(head_size) for _ in range(n_head)])
+        self.sa_head = nn.Module([Head(head_size) for _ in range(n_head)]) 
         self.proj = nn.Linear(head_size * n_head, n_embd)
     def forward(self,x):
-        out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other creating 256 X 32 dimension matrix which will be used 
+        out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other where each stacked data will have the shape of 256 X 8 creating 256 X 32 dimension matrix which will be used 
         out = self.proj(out) ## 256 X 32 @ 32 X 32 -> 256 X 32 
         return out  ## 256 X 32
 
@@ -106,32 +106,33 @@ class Block(nn.Module):
     def __init__(self, n_head, n_embd):
         super().__init__()
         head_size = n_embd // n_head
-        self.sa_head = MultiHeadAttention(n_head, head_size)
-        self.ffwd = FeedForward(n_embd)
-        self.ln1 = nn.LayerNorm(n_embd)
-        self.ln2 = nn.LayerNorm(n_embd)
+        self.sa_head = MultiHeadAttention(n_head, head_size) ##4 heads with each's dimensoin of 8. The output will be the shape of 256 X 32 
+        self.ffwd = FeedForward(n_embd) ## The output will be the shape of 256 X 32 
+        self.ln1 = nn.LayerNorm(n_embd) ## 256 X 32
+        self.ln2 = nn.LayerNorm(n_embd) ## 256 X 32 
     def forward(self):
         x = x + self.sa_head(self.ln1(x))
         x = x + self.ffwd(self.ln2(x))
-        return x 
+        return x ## 256 X 32
     
 class zalGPT(nn.Module):
     def __init__(self):
         super().__init__()
-        self.embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.embedding_table = nn.Embedding(vocab_size, n_embd) ## 50000+ X 32
         self.blocks = nn.Sequential(
             Block(4, n_embd),
             Block(4, n_embd),
             Block(4, n_embd)
-        )
+        ) 
         self.ln_f = nn.LayerNorm(n_embd)
         self.linear_layer = nn.Linear(n_embd, vocab_size)
 
     def forward(self,x, targets = None):
-        B, T = x.shape
-        x = self.embedding_table(x)
-        x = self.blocks(x)
-        logits = self.linear_layer(x)
+        B, T = x.shape ## 64 X 256
+        x = self.embedding_table(x) ## 64 X 256 X 32
+        x = self.blocks(x) ## 64 X 256 X 32
+        x = self.ln_f(x) ## 64 X 256 X 32
+        logits = self.linear_layer(x) ## 65 X 256 X 50000+ 
         if targets is None: 
             loss = None
         else:
@@ -139,7 +140,12 @@ class zalGPT(nn.Module):
             logits_flat = logits.view(B*T, C)
             targets_flat = logits.view(B*T)
             loss = F.cross_entropy(logits_flat, targets_flat)
-        return logits, loss 
+        return logits, loss ## Logits and Loss updated
+    def generate(self, idx, max_new_tokens):
+        for _ in range(max_new_tokens):
+            idx_condition = idx[:-block_size:] ## Doesnot matter how many batches, or the size of C, but it needs to be less than 256 token
+            logits, loss = self(idx_condition)
+
     
 
 
