@@ -18,7 +18,12 @@ def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
     roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
     t = torch.arange(seq_len).float()
     updated_frequency = torch.outer(roatating_frequency, t)
-    return updated_frequency.cos(), updated_frequency.sin()
+    return updated_frequency.cos(), updated_frequency.sin() ## Returns two matrices of size 256 X 4 which represents the sin and cos positions of the token positions 
+def apply_rope(x, cos, sin):
+    T = x.shape[1] ## Exatracting the T'th element from B,T,C 
+    x1 = x[..., 0::2]
+
+
 
 ## Setting up the encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
