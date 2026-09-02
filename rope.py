@@ -9,11 +9,11 @@ import json
 learning_rate = 3e-4
 batch_size = 64
 n_embd = 32 
-total_iterations = 2000
+total_iterations = 500
 eval_iter = 20
 block_size = 256
 dropout_layer = 0.2
-eval_interval = 2000
+eval_interval = 100
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
@@ -85,7 +85,7 @@ class MultiHeadAttention(nn.Module):
         self.sa_head = nn.ModuleList([Head(head_size) for _ in range(n_head)]) 
         self.proj = nn.Linear(head_size * n_head, n_embd)
     def forward(self,x):
-        out = torch.cat([h(x) for h in self.heads], dim = -1) ## The learned data will be stacked next to each other where each stacked data will have the shape of 256 X 8 creating 256 X 32 dimension matrix which will be used 
+        out = torch.cat([h(x) for h in self.sa_head], dim = -1) ## The learned data will be stacked next to each other where each stacked data will have the shape of 256 X 8 creating 256 X 32 dimension matrix which will be used 
         out = self.proj(out) ## 256 X 32 @ 32 X 32 -> 256 X 32 
         return out  ## 256 X 32
 
@@ -137,7 +137,7 @@ class zalGPT(nn.Module):
         if targets is None: 
             loss = None
         else:
-            B, T, C = x.shape
+            B, T, C = logits.shape
             logits_flat = logits.view(B*T, C)
             targets_flat = targets.view(B*T)
             loss = F.cross_entropy(logits_flat, targets_flat)
