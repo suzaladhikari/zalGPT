@@ -145,6 +145,10 @@ class zalGPT(nn.Module):
         for _ in range(max_new_tokens):
             idx_condition = idx[:-block_size:] ## Doesnot matter how many batches, or the size of C, but it needs to be less than 256 token
             logits, loss = self(idx_condition)
+            logits = logits[:-1:] ## The last token of the given sequence to predict the coming token 
+            probs = F.softmax(logits, dim = -1)## In each row it converts raw score to probability 
+            idx_next = torch.multinomial(probs, num_samples=1) ## Giving one letter at a time 
+            idx = torch.cat((idx, idx_next), dim = 1)
 
     
 
