@@ -13,6 +13,7 @@ total_iterations = 2000
 eval_iter = 20
 block_size = 256
 dropout_layer = 0.2
+eval_interval = 2000
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
@@ -170,4 +171,11 @@ def generate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), learning_rate= learning_rate)
+
+for iter in range(total_iterations):
+    if iter % eval_interval == 0:
+        losses = generate_loss()
+        print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
+        
+
 
