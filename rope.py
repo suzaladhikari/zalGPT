@@ -124,6 +124,9 @@ class zalGPT(nn.Module):
             Block(4, n_embd),
             Block(4, n_embd)
         )
+        self.ln_f = nn.LayerNorm(n_embd)
+        self.linear_layer = nn.Linear(n_embd, vocab_size)
+        
 
 model = zalGPT()
 model.to(device)
