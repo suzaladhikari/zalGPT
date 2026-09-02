@@ -181,9 +181,13 @@ for iter in range(total_iterations):
     xb, yb = create_batches('train')
     xb.to(device), yb.to(device)
     logits,loss = model(xb,yb)
+    optimizer.zero_grad(set_to_none=True)
     loss.backward()
-    optimizer.forward()
-    
+    optimizer.step()
+
+## Starting the engine 
+context = torch.zeros((1,1), dtype = torch.long, device = device)
+print(enc.decode(model.generate(context,5000)[0].tolist()))
 
 
 
