@@ -68,6 +68,8 @@ class Head(nn.Module):
         k = self.key(x)
         q = self.query(x)
         v = self.value(x)
+        k = apply_rope(x, self.rop_cos, self.rope_sin) ## Just rotates the given buffer based on what is inside
+        q = apply_rope(x, self.rope_cos, self.rope_sin)
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
