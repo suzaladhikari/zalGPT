@@ -1,5 +1,6 @@
 import torch 
 import torch.nn as nn 
+from torch.nn import functional as F
 import numpy as np 
 import tiktoken 
 import json 
@@ -73,7 +74,10 @@ class Head(nn.Module):
         q = apply_rope(x, self.rope_cos, self.rope_sin)
         wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ## Weight matrix based on the rotated values
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ### Filling the buffer 
-        
+        wei = F.softmax(wei, dim = -1)
+        out = wei @ v 
+        return out 
+
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
