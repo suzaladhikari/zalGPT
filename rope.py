@@ -64,7 +64,10 @@ class Head(nn.Module):
         self.register_buffer('rope_cos', cos, persistent=False) ## Since they are not the learnable parameters we use the buffer to deal with them
         self.register_buffer('rope_sin', sin, persistent=False)
         self.dropout = nn.Dropout(dropout_layer)
-
+    def forward(self, x):
+        k = self.key(x)
+        q = self.query(x)
+        v = self.value(x)
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_head, head_size):
         super().__init__()
