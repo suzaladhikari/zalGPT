@@ -36,9 +36,19 @@ def creating_batches(split):
     return xb.long(),yb.long()
 
 
+class FeedForward(nn.Module):
+    def __init__(self, n_embd):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(n_embd, 4*n_embd),
+            nn.Linear(4*n_embd, n_embd)
+        )
+    def forward(self,x):
+        return self.net(x) ## 256 X32
 ## Creating block class 
 class Block(nn.Module):
     def __init__(self, number_heads, n_embd):
+        super().__init__()
         head_size = n_embd // number_heads
         self.sa_heads = MultiHeadAttention(head_size, n_embd)
         self.ffwd = FeedForward(n_embd)
@@ -46,6 +56,7 @@ class Block(nn.Module):
 ### Creating the Model 
 class zalGPT(nn.Module):
     def __init__(self):
+        super().__init__()
         self.embedding_table = nn.Embedding(vocab_size, n_embd)
         self.blocks = nn.Sequential(
             Block(4, n_embd),
