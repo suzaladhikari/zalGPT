@@ -35,12 +35,17 @@ def creating_batches(split):
     yb = torch.stack([data[i+1: i+block_size+1] for i in index]) ## 64 x 256
     return xb.long(),yb.long()
 
+class MultiHeadAttention(nn.Module):
+    def __init__(self, head_size, n_embd):
+        super().__init__()
+        self.head = []
 
 class FeedForward(nn.Module):
     def __init__(self, n_embd):
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(n_embd, 4*n_embd),
+            nn.ReLU()
             nn.Linear(4*n_embd, n_embd)
         )
     def forward(self,x):
