@@ -15,3 +15,14 @@ learning_rate = 3e-4
 max_iters = 5000
 eval_interval = 500
 
+### Encoder and decoder 
+enc = tiktoken.get_encoding('gpt2')
+vocab_size = enc.n_vocab
+print(vocab_size)
+
+## Loading the data
+data = torch.tensor(np.memmap('../localgpt/data/train.bin', dtype = np.uint16, mode = 'r'))
+n = int(0.9 * len(data))
+train_data = data[:n] ## Loading the training data
+validation_data = data[n:] ## Loading the validation data
+print(len(train_data))
