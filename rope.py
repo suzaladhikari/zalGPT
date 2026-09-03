@@ -11,15 +11,16 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 500 ## Each batch loss 
+eval_iter = 500 ## Each batch loss 
 learning_rate = 3e-4
-max_iters = 5000
+total_iterations = 5000
+eval_interval = 500
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
 def build_rope_cache(seq_len, head_size, device, theta = 10000.0):
-    roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
-    t = torch.arange(seq_len).float()
+    roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size)) ## This gives the frequency that will be used to rotate
+    t = torch.arange(seq_len).float() ## This is the 256 numbers that we have. 
     updated_frequency = torch.outer(t, roatating_frequency)
     return updated_frequency.cos(), updated_frequency.sin() ## Returns two matrices of size 256 X 4 which represents the sin and cos positions of the token positions 
 def apply_rope(x, cos, sin):
