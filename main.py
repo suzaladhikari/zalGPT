@@ -15,8 +15,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
 eval_iters = 500 ## Each batch loss 
 learning_rate = 3e-4
-max_iters = 3000
-eval_interval = 100
+max_iters = 5000
+eval_interval = 500
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
