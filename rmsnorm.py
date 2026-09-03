@@ -36,6 +36,13 @@ def creating_batches(split):
     return xb.long(),yb.long()
 
 
+## Creating block class 
+class Block(nn.Module):
+    def __init__(self, number_heads, n_embd):
+        head_size = n_embd // number_heads
+        self.sa_heads = MultiHeadAttention(head_size, n_embd)
+        self.ffwd = FeedForward(n_embd)
+
 ### Creating the Model 
 class zalGPT(nn.Module):
     def __init__(self):
