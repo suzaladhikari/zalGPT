@@ -36,3 +36,13 @@ def creating_batches(split):
     return xb.long(),yb.long()
 
 
+### Creating the Model 
+class zalGPT(nn.Module):
+    def __init__(self):
+        self.embedding_table = nn.Embedding(vocab_size, n_embd)
+        self.blocks = nn.Sequential(
+            Block(4, n_embd),
+            Block(4, n_embd),
+            Block(4, n_embd)
+        )
+
