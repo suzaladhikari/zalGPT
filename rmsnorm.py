@@ -26,3 +26,13 @@ n = int(0.9 * len(data))
 train_data = data[:n] ## Loading the training data
 validation_data = data[n:] ## Loading the validation data
 print(len(train_data))
+
+### Creating batches
+def creating_batches(split):
+    data = train_data if split == 'train' else validation_data
+    index = torch.rand(len(data)-block_size, (batch_size,)) ## Random integers of the size batch 
+    xb = torch.stack([data[i:i+block_size] for i in index]) ## 64 X 256 
+    yb = torch.stack([data[i+1: i+block_size+1] for i in index]) ## 64 x 256
+    return xb.long(),yb.long()
+
+
