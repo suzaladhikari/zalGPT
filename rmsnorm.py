@@ -124,4 +124,10 @@ class zalGPT(nn.Module):
             Block(4, n_embd),
             Block(4, n_embd)
         )
+        self.rm_f = nn.RMSNorm(n_embd)
+        self.linear_layer = nn.Linear(n_embd, n_embd)
 
+
+    def forward(self,idx, target = None):
+        embed = self.embedding_table(idx)
+        
