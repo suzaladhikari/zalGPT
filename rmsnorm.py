@@ -39,7 +39,11 @@ def build_rope_cache(block_size, head_size, device, theta = 10000):
     rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
     t = torch.arange(block_size).float()
     updated_frequency = torch.outer(rotating_frequency, t)
-    return updated_frequency.cos(), updated_frequency.sin()
+    return updated_frequency.cos(), updated_frequency.sin()\
+
+def apply_rope(x, cos, sin):
+    T = x.shape[1]
+    
 
 class Head(nn.Module):
     def __init__(self, head_size):
@@ -51,11 +55,13 @@ class Head(nn.Module):
         cos, sin = build_rope_cache(block_size, head_size, device) ## Rotating frequency and storing its value in terms of the sin and cos 
         self.register_buffer('cos', cos, persistent=False) ## 256 X 4
         self.register_buffer('sin', sin, persistent=False) ## 256 X 4 
+        self.dropout_layer = nn.Dropout(dropout_layer)
 
     def forward(self, x):
-        k = self.key(x)
-        v = self.value(x)
-        q = self.value(x)
+        k = self.key(x)  ## 32 X 8 
+        v = self.value(x) ### 32 X 8 
+        q = self.value(x) ## 32 X 8
+        k = apply_rope()
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
