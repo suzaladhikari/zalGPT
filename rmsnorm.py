@@ -11,7 +11,7 @@ block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
 eval_iters = 500 ## Each batch loss 
-learning_rate = 3e-4
+learning_rate = 3e-3
 max_iters = 5000
 eval_interval = 500
 
@@ -80,6 +80,8 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
         self.heads = nn.ModuleList([Head(head_size) for _ in range(number_heads)])
+        self.proj(number_heads * head_size , n_embd)
+    
         
 
 class FeedForward(nn.Module):
