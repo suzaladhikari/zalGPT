@@ -104,6 +104,10 @@ class Block(nn.Module):
         head_size = n_embd // number_heads
         self.sa_heads = MultiHeadAttention(number_heads, head_size)
         self.ffwd = FeedForward(n_embd)
+        self.ln1 = nn.RMSNorm(n_embd)
+        self.ln2 = nn.RMSNorm(n_embd)
+        self.dropout = nn.Dropout(dropout_layer)
+    
 
 ### Creating the Model 
 class zalGPT(nn.Module):
