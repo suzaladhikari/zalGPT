@@ -37,6 +37,10 @@ def creating_batches(split):
 
 def build_rope_cache(block_size, head_size, device, theta = 10000):
     rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
+    t = torch.arange(block_size).float()
+    updated_frequency = torch.outer(rotating_frequency, t)
+    return updated_frequency.cos(), updated_frequency.sin()
+
 class Head(nn.Module):
     def __init__(self, head_size):
         super().__init__()
@@ -49,7 +53,7 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
         self.heads = nn.ModuleList([Head(head_size) for _ in range(number_heads)])
-
+        
 
 class FeedForward(nn.Module):
     def __init__(self, n_embd):
