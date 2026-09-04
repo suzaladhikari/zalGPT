@@ -41,6 +41,7 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
+        self.register_buffer('tril', torch.tril(block_size, block_size))
 class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
