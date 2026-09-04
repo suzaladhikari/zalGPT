@@ -69,6 +69,8 @@ class Head(nn.Module):
         q = self.value(x) ## 32 X 8
         k = apply_rope(k, self.cos , self.sin)
         q = apply_rope(k , self.cos, self.sin)
+        wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ### Applying the self attention 
+        
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
