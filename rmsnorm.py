@@ -49,9 +49,14 @@ class Head(nn.Module):
         self.query = nn.Linear(n_embd, head_size)
         self.register_buffer('tril', torch.tril(block_size, block_size)) ## Creates a buffer which wont get modified during the gradient descent
         cos, sin = build_rope_cache(block_size, head_size, device) ## Rotating frequency and storing its value in terms of the sin and cos 
-        self.register_buffer('cos', cos, persistent=False)
-        self.register_buffer('sin', sin, persistent=False)
-        
+        self.register_buffer('cos', cos, persistent=False) ## 256 X 4
+        self.register_buffer('sin', sin, persistent=False) ## 256 X 4 
+
+    def forward(self, x):
+        k = self.key(x)
+        v = self.value(x)
+        q = self.value(x)
+
 class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
