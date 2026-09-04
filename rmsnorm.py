@@ -80,7 +80,10 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
         self.heads = nn.ModuleList([Head(head_size) for _ in range(number_heads)])
-        self.proj(number_heads * head_size , n_embd)
+        self.proj = nn.Linear(number_heads * head_size , n_embd)
+    def forward(self,x):
+        x = torch.cat([h(x) for h in self.heads()], dim = -1)
+        return self.proj(x)
     
         
 
