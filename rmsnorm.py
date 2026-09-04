@@ -35,13 +35,16 @@ def creating_batches(split):
     yb = torch.stack([data[i+1: i+block_size+1] for i in index]) ## 64 x 256
     return xb.long(),yb.long()
 
+def build_rope_cache(block_size, head_size, device, theta = 10000):
+    rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
 class Head(nn.Module):
     def __init__(self, head_size):
         super().__init__()
         self.key = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
-        self.register_buffer('tril', torch.tril(block_size, block_size))
+        self.register_buffer('tril', torch.tril(block_size, block_size)) ## Creates a buffer which wont get modified during the gradient descent
+        cos, sin = build_rope_cache(block_size, head_size, device) ## Rotating frequency and storing its value in terms of the sin and cos 
 class MultiHeadAttention(nn.Module):
     def __init__(self, number_heads, head_size):
         super().__init__()
