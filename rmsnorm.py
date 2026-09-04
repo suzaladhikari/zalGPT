@@ -106,7 +106,12 @@ class Block(nn.Module):
         self.ffwd = FeedForward(n_embd)
         self.ln1 = nn.RMSNorm(n_embd)
         self.ln2 = nn.RMSNorm(n_embd)
-        self.dropout = nn.Dropout(dropout_layer)
+
+    def forward(self, x):
+        x = self.sa_heads(self.ln1(x))
+        x = self.ffwd(self.ln2(x))
+        return x 
+        
     
 
 ### Creating the Model 
