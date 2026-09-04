@@ -14,7 +14,7 @@ dropout_layer = 0.2
 eval_iter = 40 ## Each batch loss 
 learning_rate = 3e-3
 total_iterations = 400
-eval_interval = 200
+eval_interval = 50
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \

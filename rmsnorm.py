@@ -43,7 +43,13 @@ def build_rope_cache(block_size, head_size, device, theta = 10000):
 
 def apply_rope(x, cos, sin):
     T = x.shape[1]
-    
+    x1 = x[:, :, 0::2] ## Returns the even columns
+    x2 = x[:, :, 1::2] ## Returns the odd columns 
+    cos, sin = cos[:T], sin[:T] ## Getting the matrix based on T 
+    rot1 = x1* cos - x2* sin
+    rot2 = x1 * sin - x2 * cos
+    return torch.stack([rot1, rot2] , dim = -1).flatten(-2)
+
 
 class Head(nn.Module):
     def __init__(self, head_size):
