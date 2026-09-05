@@ -155,5 +155,13 @@ class zalGPT(nn.Module):
         return idx
 
 model = zalGPT()
-output = model(xb)
+model.to(device)
+logits, loss= model(xb)
 
+
+## Creating a loss function 
+@torch.no_grad()
+def generate_loss():
+    loss_dict = {}
+    for split in ['train', 'test']:
+        
