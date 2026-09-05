@@ -10,10 +10,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 500 ## Each batch loss 
+eval_iters = 100 ## Each batch loss 
 learning_rate = 3e-3
-max_iters = 5000
-eval_interval = 500
+max_iters = 500
+eval_interval = 100
 
 ### Encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
@@ -30,7 +30,7 @@ print(len(train_data))
 ### Creating batches
 def creating_batches(split):
     data = train_data if split == 'train' else validation_data
-    index = torch.rand(len(data)-block_size, (batch_size,)) ## Random integers of the size batch 
+    index = torch.randint(len(data)-block_size, (batch_size,)) ## Random integers of the size batch 
     xb = torch.stack([data[i:i+block_size] for i in index]) ## 64 X 256 
     yb = torch.stack([data[i+1: i+block_size+1] for i in index]) ## 64 x 256
     return xb.long(),yb.long()
@@ -59,7 +59,7 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
-        self.register_buffer('tril', torch.tril(block_size, block_size)) ## Creates a buffer which wont get modified during the gradient descent or also called mask which basically makes sure that i doesnot see future elements while predicting 
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size))) ## Creates a buffer which wont get modified during the gradient descent or also called mask which basically makes sure that i doesnot see future elements while predicting 
         cos, sin = build_rope_cache(block_size, head_size, device) ## Rotating frequency and storing its value in terms of the sin and cos 
         self.register_buffer('cos', cos, persistent=False) ## 256 X 4
         self.register_buffer('sin', sin, persistent=False) ## 256 X 4 
