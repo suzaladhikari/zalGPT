@@ -156,7 +156,7 @@ class zalGPT(nn.Module):
 
 model = zalGPT()
 model.to(device)
-logits, loss= model(xb)
+
 
 
 ## Creating a loss function 
