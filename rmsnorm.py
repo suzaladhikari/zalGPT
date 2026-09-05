@@ -56,6 +56,7 @@ def apply_rope(x, cos, sin):
 class Head(nn.Module):
     def __init__(self, head_size):
         super().__init__()
+        self.head_size = head_size
         self.key = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
@@ -73,7 +74,7 @@ class Head(nn.Module):
         k = apply_rope(k, self.cos , self.sin)
         q = apply_rope(k , self.cos, self.sin)
         wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ### Applying the self attention 
-        wei = wei.masked_fill(self.tril[:T, :T], float('-inf')) ## The masked fill goes before output because if we did after the softmax each row would no longer sum to 1 which will break the probaility distribution 
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ## The masked fill goes before output because if we did after the softmax each row would no longer sum to 1 which will break the probaility distribution 
         wei = F.softmax(wei, dim=-1)
         out = wei @ v
         return out 
