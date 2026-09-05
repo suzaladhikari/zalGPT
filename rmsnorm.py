@@ -125,9 +125,11 @@ class zalGPT(nn.Module):
             Block(4, n_embd)
         )
         self.rm_f = nn.RMSNorm(n_embd)
-        self.linear_layer = nn.Linear(n_embd, n_embd)
+        self.linear_layer = nn.Linear(n_embd, vocab_size)
 
 
     def forward(self,idx, target = None):
-        embed = self.embedding_table(idx)
-        
+        embed = self.embedding_table(idx) ## The shape will be 256 X 32 
+        out = self.blocks(n_embd)
+        out = self.rm_f(n_embd)
+        out = self.linear_layer(out)        
