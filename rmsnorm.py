@@ -142,7 +142,12 @@ class zalGPT(nn.Module):
             loss = F.cross_entropy(logits_flat,targets_flat)
         return logits, loss 
 
-    def generate(idx, max_new_tokens = 5000):
+    def generate(self, idx, max_new_tokens = 5000):
         for _ in range(max_new_tokens):
-            idx_limited = idx[:,-block_size,:]
-
+            idx_limited = idx[:,-block_size:]
+            logits, loss = self(idx_limited)
+            logits_last = logits[:,-1,:] ## This is only required for us as we predict the upcoming integer 
+            distribution = F.softmax(logits_last, dim = -1)
+            idx_next = torch.multinomial(distribution, num_samples=1) ## Randomly picking up one index from the given distribution
+            idx = torch.cat([idx, idx_next], dim = -1)
+        return idx
