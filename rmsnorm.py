@@ -169,7 +169,7 @@ def generate_loss():
         for k in range(eval_iters):
             xb,yb = creating_batches(split)
             xb,yb = xb.to(device), yb.to(device)
-            logits, loss = model(xb)
+            logits, loss = model(xb,yb)
             losses[k] = loss.item()
         loss_dict[split] = losses.mean()
     return loss_dict
