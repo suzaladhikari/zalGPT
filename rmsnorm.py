@@ -141,5 +141,8 @@ class zalGPT(nn.Module):
             targets_flat = target.view(B*T)
             loss = F.cross_entropy(logits_flat,targets_flat)
         return logits, loss 
-    
+
+    def generate(idx, max_new_tokens = 5000):
+        for _ in range(max_new_tokens):
+            idx_limited = idx[:,-block_size,:]
 
