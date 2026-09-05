@@ -59,7 +59,7 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
-        self.register_buffer('tril', torch.tril(block_size, block_size)) ## Creates a buffer which wont get modified during the gradient descent
+        self.register_buffer('tril', torch.tril(block_size, block_size)) ## Creates a buffer which wont get modified during the gradient descent or also called mask which basically makes sure that i doesnot see future elements while predicting 
         cos, sin = build_rope_cache(block_size, head_size, device) ## Rotating frequency and storing its value in terms of the sin and cos 
         self.register_buffer('cos', cos, persistent=False) ## 256 X 4
         self.register_buffer('sin', sin, persistent=False) ## 256 X 4 
@@ -73,7 +73,7 @@ class Head(nn.Module):
         k = apply_rope(k, self.cos , self.sin)
         q = apply_rope(k , self.cos, self.sin)
         wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ### Applying the self attention 
-        wei = wei.masked_fill(self.tril[:T, :T], float('-inf'))
+        wei = wei.masked_fill(self.tril[:T, :T], float('-inf')) ## The masked fill goes before output because if we did after the softmax each row would no longer sum to 1 which will break the probaility distribution 
         wei = F.softmax(wei, dim=-1)
         out = wei @ v
         return out 
@@ -164,4 +164,8 @@ logits, loss= model(xb)
 def generate_loss():
     loss_dict = {}
     for split in ['train', 'test']:
-        
+        losses = torch.zeros(eval_iters)## Torch zeros of batch size 
+        xb,yb = creating_batches(split)
+        xb,yb = xb.to(device), yb.to(device)
+        logits, loss = model(xb)
+
