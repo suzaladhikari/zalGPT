@@ -10,10 +10,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 100 ## Each batch loss 
-learning_rate = 3e-3
-max_iters = 500
-eval_interval = 100
+eval_iters = 500 ## Each batch loss 
+learning_rate = 3e-2
+max_iters = 5000
+eval_interval = 500
 
 ### Encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
@@ -123,7 +123,7 @@ class zalGPT(nn.Module):
         super().__init__()
         self.embedding_table = nn.Embedding(vocab_size, n_embd)
         self.blocks = nn.Sequential(
-            Block(4, n_embd),
+            Block(4, n_embd), ###  Each head gets it sown private slice of the representation space. All 4 heads look at the exact same sequence and have their own w_q, w_k and w_v, It is a way in which different information will be stored, it is parallel and independent computation on identical input
             Block(4, n_embd),
             Block(4, n_embd)
         )

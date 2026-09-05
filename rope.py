@@ -11,10 +11,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iter = 40 ## Each batch loss 
+eval_iters = 500 ## Each batch loss 
 learning_rate = 3e-2
-total_iterations = 400
-eval_interval = 50
+max_iters = 5000
+eval_interval = 500
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
