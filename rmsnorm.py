@@ -132,8 +132,8 @@ class zalGPT(nn.Module):
 
     def forward(self,idx, target = None):
         embed = self.embedding_table(idx) ## The shape will be 256 X 32 
-        out = self.blocks(n_embd)
-        out = self.rm_f(n_embd)
+        out = self.blocks(embed)
+        out = self.rm_f(embed)
         logits = self.linear_layer(out)
         if target == None:
             loss = None
