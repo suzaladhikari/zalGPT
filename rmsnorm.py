@@ -132,4 +132,14 @@ class zalGPT(nn.Module):
         embed = self.embedding_table(idx) ## The shape will be 256 X 32 
         out = self.blocks(n_embd)
         out = self.rm_f(n_embd)
-        out = self.linear_layer(out)        
+        logits = self.linear_layer(out)
+        if target == None:
+            loss = None
+        else:
+            B,T,C = logits.shape
+            logits_flat = logits.view(B*T, C)
+            targets_flat = target.view(B*T)
+            loss = F.cross_entropy(logits_flat,targets_flat)
+        return logits, loss 
+    
+
