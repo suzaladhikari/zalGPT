@@ -49,7 +49,7 @@ def apply_rope(x, cos, sin):
     x2 = x[:, :, 1::2] ## Returns the odd columns 
     cos, sin = cos[:T], sin[:T] ## Getting the matrix based on T 
     rot1 = x1* cos - x2* sin
-    rot2 = x1 * sin - x2 * cos
+    rot2 = x1 * sin + x2 * cos
     return torch.stack([rot1, rot2] , dim = -1).flatten(-2)
 
 
@@ -70,9 +70,9 @@ class Head(nn.Module):
         B,T,C = x.shape
         k = self.key(x)  ## 32 X 8 
         v = self.value(x) ### 32 X 8 
-        q = self.value(x) ## 32 X 8
+        q = self.query(x) ## 32 X 8
         k = apply_rope(k, self.cos , self.sin)
-        q = apply_rope(k , self.cos, self.sin)
+        q = apply_rope(q , self.cos, self.sin)
         wei = q @ k.transpose(-2,-1) * self.head_size ** -0.5 ### Applying the self attention 
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf')) ## The masked fill goes before output because if we did after the softmax each row would no longer sum to 1 which will break the probaility distribution 
         wei = F.softmax(wei, dim=-1)
@@ -111,8 +111,8 @@ class Block(nn.Module):
         self.ln2 = nn.RMSNorm(n_embd)
 
     def forward(self, x):
-        x = self.sa_heads(self.ln1(x))
-        x = self.ffwd(self.ln2(x))
+        x = x + self.sa_heads(self.ln1(x))
+        x = x + self.ffwd(self.ln2(x))
         return x 
         
     
@@ -134,7 +134,7 @@ class zalGPT(nn.Module):
     def forward(self,idx, target = None):
         embed = self.embedding_table(idx) ## The shape will be 256 X 32 
         out = self.blocks(embed)
-        out = self.rm_f(embed)
+        out = self.rm_f(out)
         logits = self.linear_layer(out)
         if target == None:
             loss = None
@@ -185,7 +185,7 @@ for iter in range(max_iters):
     xb, yb = creating_batches('train')
     xb,yb = xb.to(device), yb.to(device)
     optimizer.zero_grad(set_to_none=True)
-    logits, loss = model(xb) ## For the training purpose only 
+    logits, loss = model(xb,yb) ## For the training purpose only 
     loss.backward()
     optimizer.step()
 
