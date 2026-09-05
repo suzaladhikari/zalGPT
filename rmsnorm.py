@@ -184,10 +184,14 @@ for iter in range(max_iters):
     xb, yb = creating_batches('train')
     xb,yb = xb.to(device), yb.to(device)
     optimizer.zero_grad(set_to_none=True)
-    logits, loss = model(xb)
+    logits, loss = model(xb) ## For the training purpose only 
     loss.backward()
     optimizer.step()
-          
+
+context = torch.zeros((1,1), dtype = torch.long, device = device)
+print(enc.decode(model.generate(context,5000)[0].tolist()))
+
+
 
 
     
