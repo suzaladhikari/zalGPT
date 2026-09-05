@@ -165,7 +165,15 @@ def generate_loss():
     loss_dict = {}
     for split in ['train', 'test']:
         losses = torch.zeros(eval_iters)## Torch zeros of batch size 
-        xb,yb = creating_batches(split)
-        xb,yb = xb.to(device), yb.to(device)
-        logits, loss = model(xb)
+        for k in range(eval_iters):
+            xb,yb = creating_batches(split)
+            xb,yb = xb.to(device), yb.to(device)
+            logits, loss = model(xb)
+            losses[k] = loss.item()
+        loss_dict[split] = losses.mean()
+    return loss_dict
+
+    
+
+        
 
