@@ -173,6 +173,23 @@ def generate_loss():
         loss_dict[split] = losses.mean()
     return loss_dict
 
+### Setting up the optimizer 
+optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
+
+for iter in range(max_iters):
+    if iter % eval_interval == 0:
+        losses = generate_loss()
+        print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
+
+    xb, yb = creating_batches('train')
+    xb,yb = xb.to(device), yb.to(device)
+    optimizer.zero_grad(set_to_none=True)
+    logits, loss = model(xb)
+    loss.backward()
+    optimizer.step()
+          
+
+
     
 
         
