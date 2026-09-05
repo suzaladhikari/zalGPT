@@ -35,6 +35,8 @@ def creating_batches(split):
     yb = torch.stack([data[i+1: i+block_size+1] for i in index]) ## 64 x 256
     return xb.long(),yb.long()
 
+xb, yb = creating_batches('train')
+xb.to(device), yb.to(device)
 def build_rope_cache(block_size, head_size, device, theta = 10000):
     rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
     t = torch.arange(block_size).float()
@@ -151,3 +153,7 @@ class zalGPT(nn.Module):
             idx_next = torch.multinomial(distribution, num_samples=1) ## Randomly picking up one index from the given distribution
             idx = torch.cat([idx, idx_next], dim = -1)
         return idx
+
+model = zalGPT()
+output = model(xb)
+
