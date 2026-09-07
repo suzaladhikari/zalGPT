@@ -4,6 +4,7 @@ from torch.nn import functional as F
 import tiktoken
 import json
 import numpy as np
+import time 
 
 torch.manual_seed(455841)
 
@@ -195,6 +196,8 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(m.generate(context, max_new_tokens = 500)[0].tolist()))
 
