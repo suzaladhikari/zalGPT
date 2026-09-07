@@ -197,7 +197,8 @@ for iter in range(max_iters):
 end_time = time.perf_counter()
 
 print(f"Total time taken by the model is {end_time - start_time}")
-
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(model.generate(context,5000)[0].tolist()))
 
