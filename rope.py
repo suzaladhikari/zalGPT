@@ -187,6 +187,9 @@ for iter in range(total_iterations):
     loss.backward()
     optimizer.step()
 
+
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 ## Starting the engine 
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(model.generate(context,5000)[0].tolist()))
