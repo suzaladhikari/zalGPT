@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F 
 import numpy as np 
 import tiktoken 
+import time
+import json
 
 ## Setting up the hyperparameters 
 n_embd = 32
@@ -111,7 +113,7 @@ class Block(nn.Module):
         self.ln2 = nn.RMSNorm(n_embd)
 
     def forward(self, x):
-        x = x + self.sa_heads(self.ln1(x))
+        x = x + self.sa_heads(self.ln1(x)) ## We are applying the normalized input to the self.sa_heads
         x = x + self.ffwd(self.ln2(x))
         return x 
         
@@ -160,6 +162,7 @@ model.to(device)
 
 
 
+
 ## Creating a loss function 
 @torch.no_grad()
 def generate_loss():
@@ -176,10 +179,12 @@ def generate_loss():
 
 ### Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
-
+start_time = time.perf_counter() # This starts the time 
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        with open("./loss_tracker/rmsnormloss.json", "w") as f:
+            json.dump(losses, f) ## Dumping the loss in the file 
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     xb, yb = creating_batches('train')
@@ -188,6 +193,10 @@ for iter in range(max_iters):
     logits, loss = model(xb,yb) ## For the training purpose only 
     loss.backward()
     optimizer.step()
+
+end_time = time.perf_counter()
+
+print(f"Total time taken by the model is {end_time - start_time}")
 
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(model.generate(context,5000)[0].tolist()))
