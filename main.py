@@ -184,7 +184,7 @@ def estimate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
-
+start_time = time.perf_counter()
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = estimate_loss()
@@ -196,6 +196,9 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+end_time = time.perf_counter()
+time_taken = end_time - start_time
+print(f"Total time taken is: {time_taken}")
 total_params = sum(p.numel() for p in model.parameters())
 print(f"Total parameters: {total_params:,}")
 context = torch.zeros((1,1), dtype = torch.long, device = device)
