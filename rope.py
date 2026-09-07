@@ -4,7 +4,7 @@ from torch.nn import functional as F
 import numpy as np 
 import tiktoken 
 import json 
-
+import time 
 ## Hyperparameters to be used 
 n_embd = 32
 batch_size = 64
@@ -173,6 +173,7 @@ def generate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
+start_time = time.perf_counter()\
 
 for iter in range(total_iterations):
     if iter % eval_interval == 0:
@@ -188,6 +189,8 @@ for iter in range(total_iterations):
     optimizer.step()
 
 
+end_time = time.perf_counter()
+print(f"Total time taken: {end_time - start_time}")
 total_params = sum(p.numel() for p in model.parameters())
 print(f"Total parameters: {total_params:,}")
 ## Starting the engine 
