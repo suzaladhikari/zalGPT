@@ -173,11 +173,13 @@ def generate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
-start_time = time.perf_counter()\
+start_time = time.perf_counter()
 
 for iter in range(total_iterations):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        with open("./loss_tracker/ropeloss.json", "w") as f:
+            json.dump(losses, f)
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     ## Setting up for the backwrad propagatoin 
