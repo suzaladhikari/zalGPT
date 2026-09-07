@@ -38,8 +38,8 @@ def creating_batches(split):
 xb, yb = creating_batches('train')
 xb.to(device), yb.to(device)
 def build_rope_cache(block_size, head_size, device, theta = 10000):
-    rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
-    t = torch.arange(block_size).float()
+    rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size)) ## This defines how much to rotate
+    t = torch.arange(block_size).float() ## This defines the posiition that needs to be used 
     updated_frequency = torch.outer(t, rotating_frequency)
     return updated_frequency.cos(), updated_frequency.sin()
 
@@ -48,7 +48,7 @@ def apply_rope(x, cos, sin):
     x1 = x[:, :, 0::2] ## Returns the even columns
     x2 = x[:, :, 1::2] ## Returns the odd columns 
     cos, sin = cos[:T], sin[:T] ## Getting the matrix based on T 
-    rot1 = x1* cos - x2* sin
+    rot1 = x1* cos - x2* sin 
     rot2 = x1 * sin + x2 * cos
     return torch.stack([rot1, rot2] , dim = -1).flatten(-2)
 
