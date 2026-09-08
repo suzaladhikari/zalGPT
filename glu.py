@@ -44,7 +44,9 @@ def batch_creater(split):
 ### Rotating frequency creater with the angular value of cos and sin 
 def create_cache(block_size, head_size, theta = 10000.0):
     roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
-    
+    blocks = torch.arange(block_size).float()
+    updated_frequency = torch.outer(blocks, roatating_frequency) ## This is the product 
+    return updated_frequency.cos(), updated_frequency.sin() ## Returning sin and cos values
 
 
 ### Head 
