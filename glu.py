@@ -40,13 +40,20 @@ def batch_creater(split):
     yb = torch.stack(data[i+1:i+block_size+1] for i in range(index))
     return xb.long(), yb.long()
 
-
+### Head 
+class Head(nn.Module):
+    def __init__(self, head_size):
+        super().__init__()
+        self.key = nn.Linear(n_embd, head_size)
+        self.query = nn.Linear(n_embd, head_size)
+        self.value = nn.Linear(n_embd, head_size)
+         
 ### Multiple Head Attention 
-
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
         super().__init__()
-        
+        self.heads =  nn.ModuleList(Head(head_size) for _ in range(n_heads))
+
 class Block(nn.Module):
     def __init__(self, n_heads, n_embd):
         super().__init__()
