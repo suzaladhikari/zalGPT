@@ -108,7 +108,7 @@ class SwiGLU(nn.Module):
     def forward(self, x):
         gate = F.glu(self.weight1(x))
         value = self.weight2(x)
-        
+        return self.dropout(self.w3(gate * value))
 
 
 
