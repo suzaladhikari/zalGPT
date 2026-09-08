@@ -12,10 +12,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 100 ## Each batch loss 
+eval_iters = 250 ## Each batch loss 
 learning_rate = 3e-2
-max_iters = 500
-eval_interval = 100
+max_iters = 5000
+eval_interval = 500
 
 ### Encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')
@@ -183,8 +183,9 @@ start_time = time.perf_counter() # This starts the time
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in losses.items()}
         with open("./loss_tracker/rmsnormloss.json", "w") as f:
-            json.dump(losses, f) ## Dumping the loss in the file 
+            json.dump(changed_loss, f) ## Dumping the loss in the file 
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     xb, yb = creating_batches('train')
@@ -208,4 +209,3 @@ print(enc.decode(model.generate(context,5000)[0].tolist()))
     
 
         
-
