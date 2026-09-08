@@ -80,6 +80,9 @@ class Head(nn.Module):
         wei = rotated_q @ rotated_k.transpose(-2,-1) * self.head_size ** -0.5 
         wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))
         wei = F.softmax(wei, dim = -1)
+        out = wei @ v 
+        return out 
+    
 
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
