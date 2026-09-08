@@ -39,3 +39,15 @@ def batch_creater(split):
     xb = torch.stack(data[i:i+block_size] for i in range(index))
     yb = torch.stack(data[i+1:i+block_size+1] for i in range(index))
     return xb.long(), yb.long()
+
+### Starting the model 
+
+class zalGpt(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.embedding_table = nn.Embedding(vocab_size, n_embd) ##Creating the embedding table 
+        self.blocks = nn.Sequential(
+            Block(4, n_embd),
+            Block(4, n_embd),
+            Block(4, n_embd)
+        )
