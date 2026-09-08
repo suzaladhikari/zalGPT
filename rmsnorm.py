@@ -10,10 +10,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 500 ## Each batch loss 
+eval_iters = 100 ## Each batch loss 
 learning_rate = 3e-2
-max_iters = 5000
-eval_interval = 500
+max_iters = 500
+eval_interval = 100
 
 ### Encoder and decoder 
 enc = tiktoken.get_encoding('gpt2')

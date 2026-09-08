@@ -161,8 +161,8 @@ def generate_loss():
     out = {}
     model.eval()
     for split in ['train','test']:
-        losses = torch.zeros(eval_iter)
-        for k in range(eval_iter):
+        losses = torch.zeros(eval_iters)
+        for k in range(eval_iters):
             xb, yb = create_batches(split)
             xb, yb = xb.to(device), yb.to(device)
             logits, loss = model(xb, yb)
@@ -174,7 +174,7 @@ def generate_loss():
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
 
-for iter in range(total_iterations):
+for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
