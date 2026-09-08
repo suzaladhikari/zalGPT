@@ -31,3 +31,8 @@ train_data = data[:n] ## Loading the training data
 validation_data = data[n:] ## Loading the validation data
 print(len(train_data))
 
+
+## Creating the batches 
+def batch_creater(split):
+    data = train_data if split == 'train' else validation_data
+    index = torch.randint(len(data)- block_size, (batch_size, ))
