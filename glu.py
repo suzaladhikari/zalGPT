@@ -67,6 +67,7 @@ class Head(nn.Module):
         cos, sin = create_cache(block_size, head_size) ## Applying rope 
         self.register_buffer('cos', cos, persistent=False)
         self.register_buffer('sin', sin, persistent=False)
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
 
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
