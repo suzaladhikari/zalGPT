@@ -76,6 +76,7 @@ class Head(nn.Module):
         v = self.value(x)
         rotated_k = apply_rope_cache(k , self.sin, self.cos)
         rotated_q = apply_rope_cache(q, self.sin, self.cos)
+        wei = rotated_q @ rotated_k.transpose(-2,-1) * self.head_size ** -0.5 
         
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
