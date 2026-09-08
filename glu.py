@@ -49,6 +49,7 @@ def create_cache(block_size, head_size, theta = 10000.0):
     return updated_frequency.cos(), updated_frequency.sin() ## Returning sin and cos values
 
 
+def apply_rope_cache()
 ### Head 
 class Head(nn.Module):
     def __init__(self, head_size):
@@ -57,6 +58,8 @@ class Head(nn.Module):
         self.query = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
         cos, sin = create_cache(block_size, head_size) ## Applying rope 
+        self.register_buffer('cos', cos, persistent=False)
+        self.register_buffer('sin', sin, persistent=False)
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
