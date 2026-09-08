@@ -40,6 +40,13 @@ def batch_creater(split):
     yb = torch.stack(data[i+1:i+block_size+1] for i in range(index))
     return xb.long(), yb.long()
 
+
+### Rotating frequency creater with the angular value of cos and sin 
+def create_cache(block_size, head_size, theta = 10000.0):
+    roatating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
+    
+
+
 ### Head 
 class Head(nn.Module):
     def __init__(self, head_size):
@@ -47,7 +54,7 @@ class Head(nn.Module):
         self.key = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
-         
+        cos, sin = create_cache(block_size, head_size) ## Applying rope 
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
