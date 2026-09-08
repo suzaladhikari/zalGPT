@@ -18,6 +18,7 @@ eval_iters = 500 ## Each batch loss
 learning_rate = 3e-2
 max_iters = 5000
 eval_interval = 500
+hidden_embd = 
 
 
 ### Loading the data from the files
@@ -118,6 +119,7 @@ class Block(nn.Module):
         super().__init__()
         head_size = n_embd // n_heads
         self.heads = MultiHeadAttention(n_heads, head_size)
+        self.ffwd = SwiGLU(n_embd, hidden_embd)
 
 
 ### Starting the model 
