@@ -18,4 +18,16 @@ eval_iters = 500 ## Each batch loss
 learning_rate = 3e-2
 max_iters = 5000
 eval_interval = 500
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+
+### Loading the data from the files
+enc = tiktoken.get_encoding('gpt2')
+vocab_size = enc.n_vocab ## This gives the total tokens used in the gpt2 encoder
+print(vocab_size)
+## Training and validaiton split
+data = torch.tensor(np.memmap('../localgpt/data/train.bin', dtype = np.uint16, mode = 'r'))
+n = int(0.9 * len(data))
+train_data = data[:n] ## Loading the training data
+validation_data = data[n:] ## Loading the validation data
+print(len(train_data))
+
