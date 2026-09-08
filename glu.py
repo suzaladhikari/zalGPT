@@ -89,6 +89,13 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
         super().__init__()
         self.heads =  nn.ModuleList(Head(head_size) for _ in range(n_heads))
+        self.proj = nn.Linear(n_heads * head_size, n_embd) ## To make sure that the information is shared between the blocks 
+
+    def forward(self, x):
+        out = torch.cat([h(x) for h in self.heads], dim = -1)
+        out = self.proj(out)
+        return out 
+
 
 class Block(nn.Module):
     def __init__(self, n_heads, n_embd):
