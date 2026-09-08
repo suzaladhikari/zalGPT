@@ -71,13 +71,16 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(dropout_layer)
 
     def forward(self, x):
+        B,T,C = x.shape[1]
         k = self.key(x)
         q = self.query(x)
         v = self.value(x)
         rotated_k = apply_rope_cache(k , self.sin, self.cos)
         rotated_q = apply_rope_cache(q, self.sin, self.cos)
         wei = rotated_q @ rotated_k.transpose(-2,-1) * self.head_size ** -0.5 
-        
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))
+        wei = F.softmax(wei, dim = -1)
+
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
