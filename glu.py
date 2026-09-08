@@ -69,7 +69,11 @@ class Head(nn.Module):
         self.register_buffer('sin', sin, persistent=False)
         self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
         self.dropout = nn.Dropout(dropout_layer)
-    
+
+    def forward(self, x):
+        k = self.key(x)
+        q = self.query(x)
+        v = self.value(x)
 ### Multiple Head Attention 
 class MultiHeadAttention(nn.Module):
     def __init__(self, n_heads, head_size):
