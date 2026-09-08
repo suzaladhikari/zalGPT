@@ -97,6 +97,17 @@ class MultiHeadAttention(nn.Module):
         return out 
 
 
+class SwiGLU(nn.Module):
+    def __init__(self, n_embd, hidden_embd):
+        super().__init__()
+        self.weight1 = nn.Linear(n_embd, hidden_embd)
+        self.weight2 = nn.Linear(n_embd, hidden_embd)
+        self.weight3 = nn.Linear(hidden_embd, n_embd)
+        self.dropout = nn.Dropout(dropout_layer)
+
+
+
+
 class Block(nn.Module):
     def __init__(self, n_heads, n_embd):
         super().__init__()
