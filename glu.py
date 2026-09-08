@@ -105,6 +105,11 @@ class SwiGLU(nn.Module):
         self.weight3 = nn.Linear(hidden_embd, n_embd)
         self.dropout = nn.Dropout(dropout_layer)
 
+    def forward(self, x):
+        gate = F.glu(self.weight1(x))
+        value = self.weight2(x)
+        
+
 
 
 
