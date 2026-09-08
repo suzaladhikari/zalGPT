@@ -40,15 +40,21 @@ def batch_creater(split):
     yb = torch.stack(data[i+1:i+block_size+1] for i in range(index))
     return xb.long(), yb.long()
 
-### Starting the model 
 
+### Multiple Head Attention 
+
+class MultiHeadAttention(nn.Module):
+    def __init__(self, n_heads, head_size):
+        super().__init__()
+        
 class Block(nn.Module):
     def __init__(self, n_heads, n_embd):
         super().__init__()
         head_size = n_embd // n_heads
-        self.heads = nn.ModuleList(Head(head_size))
-        
+        self.heads = MultipleHeadAttention(n_heads, head_size)
 
+
+### Starting the model 
 class zalGpt(nn.Module):
     def __init__(self):
         super().__init__()
