@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F 
 import numpy as np 
 import tiktoken 
+import time
+import json
 
 ## Setting up the hyperparameters 
 n_embd = 32
@@ -38,8 +40,8 @@ def creating_batches(split):
 xb, yb = creating_batches('train')
 xb.to(device), yb.to(device)
 def build_rope_cache(block_size, head_size, device, theta = 10000):
-    rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size))
-    t = torch.arange(block_size).float()
+    rotating_frequency = 1.0 / (theta ** (torch.arange(0,head_size,2).float() / head_size)) ## This defines how much to rotate
+    t = torch.arange(block_size).float() ## This defines the posiition that needs to be used 
     updated_frequency = torch.outer(t, rotating_frequency)
     return updated_frequency.cos(), updated_frequency.sin()
 
@@ -48,7 +50,7 @@ def apply_rope(x, cos, sin):
     x1 = x[:, :, 0::2] ## Returns the even columns
     x2 = x[:, :, 1::2] ## Returns the odd columns 
     cos, sin = cos[:T], sin[:T] ## Getting the matrix based on T 
-    rot1 = x1* cos - x2* sin
+    rot1 = x1* cos - x2* sin 
     rot2 = x1 * sin + x2 * cos
     return torch.stack([rot1, rot2] , dim = -1).flatten(-2)
 
@@ -111,7 +113,7 @@ class Block(nn.Module):
         self.ln2 = nn.RMSNorm(n_embd)
 
     def forward(self, x):
-        x = x + self.sa_heads(self.ln1(x))
+        x = x + self.sa_heads(self.ln1(x)) ## We are applying the normalized input to the self.sa_heads
         x = x + self.ffwd(self.ln2(x))
         return x 
         
@@ -160,6 +162,7 @@ model.to(device)
 
 
 
+
 ## Creating a loss function 
 @torch.no_grad()
 def generate_loss():
@@ -176,10 +179,12 @@ def generate_loss():
 
 ### Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
-
+start_time = time.perf_counter() # This starts the time 
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        with open("./loss_tracker/rmsnormloss.json", "w") as f:
+            json.dump(losses, f) ## Dumping the loss in the file 
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     xb, yb = creating_batches('train')
@@ -189,6 +194,11 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+end_time = time.perf_counter()
+
+print(f"Total time taken by the model is {end_time - start_time}")
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(model.generate(context,5000)[0].tolist()))
 

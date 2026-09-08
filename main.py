@@ -4,6 +4,7 @@ from torch.nn import functional as F
 import tiktoken
 import json
 import numpy as np
+import time 
 
 torch.manual_seed(455841)
 
@@ -183,10 +184,12 @@ def estimate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
-
+start_time = time.perf_counter()
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = estimate_loss()
+        with open("./loss_tracker/mainlosses.json", 'w') as f:
+            json.dump(losses,f)
         print(f" step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
     xb, yb = get_batch('train')
     xb, yb = xb.to(device), yb.to(device)
@@ -195,6 +198,11 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+end_time = time.perf_counter()
+time_taken = end_time - start_time
+print(f"Total time taken is: {time_taken}")
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(m.generate(context, max_new_tokens = 500)[0].tolist()))
 

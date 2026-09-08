@@ -4,7 +4,7 @@ from torch.nn import functional as F
 import numpy as np 
 import tiktoken 
 import json 
-
+import time 
 ## Hyperparameters to be used 
 n_embd = 32
 batch_size = 64
@@ -173,10 +173,13 @@ def generate_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
+start_time = time.perf_counter()
 
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        with open("./loss_tracker/ropeloss.json", "w") as f:
+            json.dump(losses, f)
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     ## Setting up for the backwrad propagatoin 
@@ -187,6 +190,11 @@ for iter in range(max_iters):
     loss.backward()
     optimizer.step()
 
+
+end_time = time.perf_counter()
+print(f"Total time taken: {end_time - start_time}")
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
 ## Starting the engine 
 context = torch.zeros((1,1), dtype = torch.long, device = device)
 print(enc.decode(model.generate(context,5000)[0].tolist()))
