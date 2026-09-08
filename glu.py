@@ -42,6 +42,13 @@ def batch_creater(split):
 
 ### Starting the model 
 
+class Block(nn.Module):
+    def __init__(self, n_heads, n_embd):
+        super().__init__()
+        head_size = n_embd // n_heads
+        self.heads = nn.ModuleList(Head(head_size))
+        
+
 class zalGpt(nn.Module):
     def __init__(self):
         super().__init__()
