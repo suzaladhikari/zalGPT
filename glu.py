@@ -183,6 +183,9 @@ def generating_loss():
             xb, yb = batch_creater(split)
             logits, loss = model(xb,yb)
             losses[_] = loss.item()
-            
+        loss[split] = losses.mean()
+    return loss
+
+
 
 
