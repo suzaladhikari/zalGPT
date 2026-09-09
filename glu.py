@@ -161,4 +161,6 @@ class zalGpt(nn.Module):
     def generate(self,idx, max_new_tokens = 5000):
         idx_accepted = idx[:,-block_size:]
         logits, loss = self(idx_accepted)
-        
+        logits_last = logits[:,-1,:] ## The shape is B,1,C 
+        distribution = F.softmax(logits_last, dim = -1)
+
