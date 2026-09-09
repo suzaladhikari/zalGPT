@@ -159,9 +159,12 @@ class zalGpt(nn.Module):
         return logits, loss 
 
     def generate(self,idx, max_new_tokens = 5000):
-        idx_accepted = idx[:,-block_size:]
-        logits, loss = self(idx_accepted)
-        logits_last = logits[:,-1,:] ## The shape is B,1,C 
-        distribution = F.softmax(logits_last, dim = -1) ## From the last token it creates the probability among the 50257 other embeddings 
-        idx_next = torch.multinomial(distribution, num_samples=1)
+        for _ in range(max_new_tokens):
+            idx_accepted = idx[:,-block_size:]
+            logits, loss = self(idx_accepted)
+            logits_last = logits[:,-1,:] ## The shape is B,1,C 
+            distribution = F.softmax(logits_last, dim = -1) ## From the last token it creates the probability among the 50257 other embeddings 
+            idx_next = torch.multinomial(distribution, num_samples=1)
+            idx = torch.concat([idx, idx_next], dim = -1)
+        return idx 
 
