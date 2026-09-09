@@ -162,5 +162,6 @@ class zalGpt(nn.Module):
         idx_accepted = idx[:,-block_size:]
         logits, loss = self(idx_accepted)
         logits_last = logits[:,-1,:] ## The shape is B,1,C 
-        distribution = F.softmax(logits_last, dim = -1)
+        distribution = F.softmax(logits_last, dim = -1) ## From the last token it creates the probability among the 50257 other embeddings 
+        idx_next = torch.multinomial(distribution, num_samples=1)
 
