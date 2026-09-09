@@ -152,8 +152,13 @@ class zalGpt(nn.Module):
         if target == None:
             loss = None
         else: 
-            B,T,C = x 
+            B,T,C = logits.shape 
             logits_flat = logits.view(B*T, C)
             targets_flat = target.view(B*T)
             loss = F.cross_entropy(logits_flat, targets_flat)
-            
+        return logits, loss 
+
+    def generate(self,idx, max_new_tokens = 5000):
+        idx_accepted = idx[:,-block_size:]
+        logits, loss = self(idx_accepted)
+        
