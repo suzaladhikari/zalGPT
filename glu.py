@@ -168,3 +168,19 @@ class zalGpt(nn.Module):
             idx = torch.concat([idx, idx_next], dim = -1)
         return idx 
 
+
+model = zalGpt()
+model.to(device)
+
+
+
+## Loss calculation 
+def generating_loss():
+    loss = {}
+    for split in ['train', 'test']:
+        losses = torch.ones(block_size)
+        
+        xb, yb = batch_creater(split)
+        logits, loss = model(xb,yb)
+
+
