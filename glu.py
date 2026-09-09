@@ -143,4 +143,17 @@ class zalGpt(nn.Module):
         self.rn1 = nn.RMSNorm(n_embd)
         self.linear = nn.Linear(n_embd, vocab_size)
 
-    
+
+    def forward(self, x, target = None):
+        embd = self.embedding_table(x)
+        out = self.blocks(embd)
+        out = self.rn1(out)
+        logits = self.linear(out)
+        if target == None:
+            loss = None
+        else: 
+            B,T,C = x 
+            logits_flat = logits.view(B*T, C)
+            targets_flat = target.view(B*T)
+            loss = F.cross_entropy(logits_flat, targets_flat)
+            
