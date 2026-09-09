@@ -130,7 +130,6 @@ class Block(nn.Module):
         return out  
 
 
-
 ### Starting the model 
 class zalGpt(nn.Module):
     def __init__(self):
@@ -141,3 +140,7 @@ class zalGpt(nn.Module):
             Block(4, n_embd),
             Block(4, n_embd)
         )
+        self.rn1 = nn.RMSNorm(n_embd)
+        self.linear = nn.Linear(n_embd, vocab_size)
+
+    
