@@ -174,18 +174,22 @@ model.to(device)
 
 
 
-## Loss calculation 
+## Loss calculation
+@torch.no_grad() 
 def generating_loss():
     loss = {}
     for split in ['train', 'test']:
         losses = torch.ones(eval_iters)
         for _ in range(eval_iters):
             xb, yb = batch_creater(split)
+            xb, yb = xb.to(device), yb.to(device)
             logits, loss = model(xb,yb)
             losses[_] = loss.item()
         loss[split] = losses.mean()
     return loss
 
+## Setting up the optimizer 
+optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
 
 
 
