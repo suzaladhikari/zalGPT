@@ -120,6 +120,8 @@ class Block(nn.Module):
         head_size = n_embd // n_heads
         self.heads = MultiHeadAttention(n_heads, head_size)
         self.ffwd = SwiGLU(n_embd, hidden_embd)
+        self.rn1 = nn.RMSNorm(n_embd)
+        self.rn2 = nn.RMSNorm(n_embd)
 
 
 ### Starting the model 
