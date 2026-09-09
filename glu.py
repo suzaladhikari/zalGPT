@@ -122,6 +122,13 @@ class Block(nn.Module):
         self.ffwd = SwiGLU(n_embd, hidden_embd)
         self.rn1 = nn.RMSNorm(n_embd)
         self.rn2 = nn.RMSNorm(n_embd)
+        self.dropout = nn.Dropout(dropout_layer)
+
+    def forward(self, x):
+        x = x + self.heads(self.rn1(x))
+        out = x + self.ffwd(self.rn2(x))
+        return out  
+
 
 
 ### Starting the model 
