@@ -178,9 +178,11 @@ model.to(device)
 def generating_loss():
     loss = {}
     for split in ['train', 'test']:
-        losses = torch.ones(block_size)
-        
-        xb, yb = batch_creater(split)
-        logits, loss = model(xb,yb)
+        losses = torch.ones(eval_iters)
+        for _ in range(eval_iters):
+            xb, yb = batch_creater(split)
+            logits, loss = model(xb,yb)
+            losses[_] = loss.item()
+            
 
 
