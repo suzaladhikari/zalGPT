@@ -198,7 +198,7 @@ for iter in range(max_iters):
     if iter % eval_interval == 0:        
         loss = generating_loss()
         changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
-        with open('./loss_tracker/glu.json', 'w') as f:
+        with open('./loss_tracker/glu.json', 'a') as f:
             json.dump(changed_loss,f)
         print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
     xb,yb = batch_creater('train')

@@ -189,7 +189,7 @@ for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = estimate_loss()
         changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
-        with open("./loss_tracker/mainlosses.json", 'w') as f:
+        with open("./loss_tracker/mainlosses.json", 'a') as f:
             json.dump(changed_loss,f)
         print(f" step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
     xb, yb = get_batch('train')
