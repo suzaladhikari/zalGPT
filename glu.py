@@ -203,7 +203,7 @@ for iter in range(max_iters):
     xb,yb = batch_creater('train')
     optimizer.zero_grad(set_to_none=True)
     xb,yb = xb.to(device), yb.to(device)
-    logits, loss = model(xb)
+    logits, loss = model(xb,yb)
     loss.backward()
     optimizer.step()
 
