@@ -72,7 +72,7 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(dropout_layer)
 
     def forward(self, x):
-        B,T,C = x.shape[1]
+        B,T,C =x.shape
         k = self.key(x)
         q = self.query(x)
         v = self.value(x)
