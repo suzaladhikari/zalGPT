@@ -199,8 +199,12 @@ for iter in range(max_iters):
         with open('./loss_tracker/glu.json', 'w') as f:
             json.dump(changed_loss,f)
     xb,yb = batch_creater('train')
+    optimizer.zero_grad(set_to_none=True)
     xb,yb = xb.to(device), yb.to(device)
     logits, loss = model(xb)
-    logits = logits[:,-1,:]
+    loss.backward()
+    optimizer.step()
     
+
+
 
