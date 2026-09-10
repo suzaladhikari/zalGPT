@@ -194,12 +194,11 @@ def generating_loss():
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
 start_time = time.perf_counter()
 
+loss_history = []
 for iter in range(max_iters):
     if iter % eval_interval == 0:        
         loss = generating_loss()
-        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
-        with open('./loss_tracker/glu.json', 'a') as f:
-            json.dump(changed_loss,f)
+        loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
         print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
     xb,yb = batch_creater('train')
     optimizer.zero_grad(set_to_none=True)
