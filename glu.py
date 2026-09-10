@@ -62,6 +62,7 @@ def apply_rope_cache(x, sin, cos):
 class Head(nn.Module):
     def __init__(self, head_size):
         super().__init__()
+        self.head_size = head_size
         self.key = nn.Linear(n_embd, head_size)
         self.query = nn.Linear(n_embd, head_size)
         self.value = nn.Linear(n_embd, head_size)
