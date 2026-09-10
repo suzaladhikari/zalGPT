@@ -185,17 +185,18 @@ def estimate_loss():
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
 start_time = time.perf_counter()
+loss_history = []
 for iter in range(max_iters):
-    if iter % eval_interval == 0:
-        losses = estimate_loss()
-        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
-        with open("./loss_tracker/mainlosses.json", 'a') as f:
-            json.dump(changed_loss,f)
-        print(f" step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
-    xb, yb = get_batch('train')
-    xb, yb = xb.to(device), yb.to(device)
-    logits, loss = model(xb,yb)
+    if iter % eval_interval == 0:        
+        loss = estimate_loss()
+        loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
+        print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
+        with open('./loss_tracker/glu.json', 'w') as f:
+            json.dump(loss_history, f, indent=2)
+    xb,yb = get_batch('train')
     optimizer.zero_grad(set_to_none=True)
+    xb,yb = xb.to(device), yb.to(device)
+    logits, loss = model(xb,yb)
     loss.backward()
     optimizer.step()
 
