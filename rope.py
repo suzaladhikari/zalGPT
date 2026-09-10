@@ -177,19 +177,18 @@ def generate_loss():
 optimizer = torch.optim.AdamW(model.parameters(), lr= learning_rate)
 start_time = time.perf_counter()
 
+loss_history = []
 for iter in range(max_iters):
-    if iter % eval_interval == 0:
-        losses = generate_loss()
-        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
-        with open("./loss_tracker/ropeloss.json", "a") as f:
-            json.dump(changed_loss, f)
-        print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
-
-    ## Setting up for the backwrad propagatoin 
-    xb, yb = create_batches('train')
-    xb, yb = xb.to(device), yb.to(device)
-    logits,loss = model(xb,yb)
+    if iter % eval_interval == 0:        
+        loss = generate_loss()
+        loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
+        print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
+        with open('./loss_tracker/glu.json', 'w') as f:
+            json.dump(loss_history, f, indent=2)
+    xb,yb = create_batches('train')
     optimizer.zero_grad(set_to_none=True)
+    xb,yb = xb.to(device), yb.to(device)
+    logits, loss = model(xb,yb)
     loss.backward()
     optimizer.step()
 
