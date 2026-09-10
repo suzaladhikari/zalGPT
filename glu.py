@@ -10,15 +10,15 @@ import time
 ## Setting up the hyperparameters
 
 torch.manual_seed(455841)
-n_embd = 32
+n_embd = 64
 batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 5 ## Each batch loss 
+eval_iters = 100 ## Each batch loss 
 learning_rate = 3e-2
-max_iters = 20
-eval_interval = 5
+max_iters = 5000
+eval_interval = 100
 hidden_embd = int(8/3) * n_embd
 
 
