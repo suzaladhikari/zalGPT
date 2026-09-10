@@ -190,6 +190,5 @@ def generating_loss():
 
 ## Setting up the optimizer 
 optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
-
-
+start_time = time.perf_counter()
 
