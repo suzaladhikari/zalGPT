@@ -178,8 +178,9 @@ start_time = time.perf_counter()
 for iter in range(max_iters):
     if iter % eval_interval == 0:
         losses = generate_loss()
+        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
         with open("./loss_tracker/ropeloss.json", "w") as f:
-            json.dump(losses, f)
+            json.dump(changed_loss, f)
         print(f"step{iter}: Test loss {losses['test']}, Train loss {losses['train']}")
 
     ## Setting up for the backwrad propagatoin 
