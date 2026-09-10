@@ -7,6 +7,8 @@ import time
 import json
 
 ## Setting up the hyperparameters 
+
+torch.manual_seed(455841)
 n_embd = 32
 batch_size = 64
 block_size = 256
