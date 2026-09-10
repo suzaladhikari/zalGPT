@@ -198,13 +198,22 @@ for iter in range(max_iters):
         changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
         with open('./loss_tracker/glu.json', 'w') as f:
             json.dump(changed_loss,f)
+        print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
     xb,yb = batch_creater('train')
     optimizer.zero_grad(set_to_none=True)
     xb,yb = xb.to(device), yb.to(device)
     logits, loss = model(xb)
     loss.backward()
     optimizer.step()
-    
+
+end_time = time.perf_counter()
+print(f"Total time taken: {end_time - start_time}")
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total parameters: {total_params:,}")
+## Starting the engine 
+context = torch.zeros((1,1), dtype = torch.long, device = device)
+print(enc.decode(model.generate(context,5000)[0].tolist()))
+
 
 
 
