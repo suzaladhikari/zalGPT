@@ -37,8 +37,8 @@ print(len(train_data))
 def batch_creater(split):
     data = train_data if split == 'train' else validation_data
     index = torch.randint(len(data)- block_size, (batch_size, ))
-    xb = torch.stack(data[i:i+block_size] for i in range(index))
-    yb = torch.stack(data[i+1:i+block_size+1] for i in range(index))
+    xb = torch.stack([data[i:i+block_size] for i in index])
+    yb = torch.stack([data[i+1:i+block_size+1] for i in index])
     return xb.long(), yb.long()
 
 
