@@ -18,7 +18,7 @@ eval_iters = 100 ## Each batch loss
 learning_rate = 3e-2
 max_iters = 500
 eval_interval = 100
-hidden_embd = int(8/3 * n_embd)
+hidden_embd = int(8/3) * n_embd
 
 
 ### Loading the data from the files
