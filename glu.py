@@ -15,10 +15,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 100 ## Each batch loss 
+eval_iters = 5 ## Each batch loss 
 learning_rate = 3e-2
-max_iters = 500
-eval_interval = 100
+max_iters = 20
+eval_interval = 5
 hidden_embd = int(8/3) * n_embd
 
 
@@ -200,6 +200,8 @@ for iter in range(max_iters):
         loss = generating_loss()
         loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
         print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
+        with open('./loss_tracker/glu.json', 'w') as f:
+            json.dump(loss_history, f, indent=2)
     xb,yb = batch_creater('train')
     optimizer.zero_grad(set_to_none=True)
     xb,yb = xb.to(device), yb.to(device)
