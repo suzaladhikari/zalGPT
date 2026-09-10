@@ -198,5 +198,9 @@ for iter in range(max_iters):
         changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
         with open('./loss_tracker/glu.json', 'w') as f:
             json.dump(changed_loss,f)
-
+    xb,yb = batch_creater('train')
+    xb,yb = xb.to(device), yb.to(device)
+    logits, loss = model(xb)
+    logits = logits[:,-1,:]
+    
 
