@@ -108,9 +108,9 @@ class SwiGLU(nn.Module):
         self.dropout = nn.Dropout(dropout_layer)
 
     def forward(self, x):
-        gate = F.glu(self.weight1(x))
+        gate = F.silu(self.weight1(x))
         value = self.weight2(x)
-        return self.dropout(self.w3(gate * value))
+        return self.dropout(self.weight3(gate * value))
 
 
 
