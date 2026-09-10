@@ -193,9 +193,10 @@ optimizer = torch.optim.AdamW(model.parameters(), lr = learning_rate)
 start_time = time.perf_counter()
 
 for iter in range(max_iters):
-    if iter % eval_interval == 0: 
+    if iter % eval_interval == 0:        
+        loss = generating_loss()
+        changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in loss.items()}
         with open('./loss_tracker/glu.json', 'w') as f:
-            loss = generating_loss()
-            changed_loss = {key:value.item() if torch.is_tensor(value) else value for key,value in losses.items()}
+            json.dump(changed_loss,f)
 
 
