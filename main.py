@@ -14,10 +14,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 500 ## Each batch loss 
+eval_iters = 100 ## Each batch loss 
 learning_rate = 3e-2
 max_iters = 5000
-eval_interval = 500
+eval_interval = 100
 ### Each time the model gets the data of total 16,384 tokens/step
 
 ### Extracting the key words
@@ -190,7 +190,7 @@ for iter in range(max_iters):
     if iter % eval_interval == 0:        
         loss = estimate_loss()
         loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['val'].item()})
-        print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
+        print(f"step{iter}: Test loss {loss['val']}, Train loss {loss['train']}")
         with open('./loss_tracker/baseline.json', 'w') as f:
             json.dump(loss_history, f, indent=2)
     xb,yb = get_batch('train')
