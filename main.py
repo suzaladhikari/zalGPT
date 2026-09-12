@@ -189,7 +189,7 @@ loss_history = []
 for iter in range(max_iters):
     if iter % eval_interval == 0:        
         loss = estimate_loss()
-        loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
+        loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['val'].item()})
         print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
         with open('./loss_tracker/baseline.json', 'w') as f:
             json.dump(loss_history, f, indent=2)
