@@ -191,7 +191,7 @@ for iter in range(max_iters):
         loss = estimate_loss()
         loss_history.append({"step":iter, "train":loss['train'].item(), "test": loss['test'].item()})
         print(f"step{iter}: Test loss {loss['test']}, Train loss {loss['train']}")
-        with open('./loss_tracker/glu.json', 'w') as f:
+        with open('./loss_tracker/baseline.json', 'w') as f:
             json.dump(loss_history, f, indent=2)
     xb,yb = get_batch('train')
     optimizer.zero_grad(set_to_none=True)
