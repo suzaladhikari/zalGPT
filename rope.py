@@ -14,10 +14,10 @@ batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 dropout_layer = 0.2
-eval_iters = 100 ## Each batch loss 
+eval_iters = 1 ## Each batch loss 
 learning_rate = 3e-2
-max_iters = 5000
-eval_interval = 100
+max_iters = 1
+eval_interval = 1
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ### For RoPE setup \
@@ -197,6 +197,7 @@ for iter in range(max_iters):
 end_time = time.perf_counter()
 print(f"Total time taken: {end_time - start_time}")
 total_params = sum(p.numel() for p in model.parameters())
+trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Total parameters: {total_params:,}")
 ## Starting the engine 
 context = torch.zeros((1,1), dtype = torch.long, device = device)
