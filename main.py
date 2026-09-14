@@ -9,7 +9,7 @@ import time
 torch.manual_seed(455841)
 
 ### Setting up the hyperparameters
-n_embd = 32
+n_embd = 64
 batch_size = 64
 block_size = 256
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
